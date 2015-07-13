@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(app) {
-  // Client routing
+  // Root routing
   var core = require('../../app/controllers/core.server.controller');
-  app.route('/client').post(client.create);
+  app.route('/').get(core.index);
 };
