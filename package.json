@@ -1,0 +1,26 @@
+{
+  "name": "openhmis-intake",
+  "version": "1.0.0",
+  "description": "An application to create clients using the OpenHMIS API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slifty/openhmis-intake.git"
+  },
+  "author": "Daniel Schultz <slifty@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slifty/openhmis-intake/issues"
+  },
+  "homepage": "https://github.com/slifty/openhmis-intake",
+  "dependencies": {
+    "body-parser": "^1.13.2",
+    "cookie-parser": "^1.3.5",
+    "express": "^4.13.1",
+    "express-session": "^1.11.3",
+    "forever": "^0.14.2"
+  }
+}

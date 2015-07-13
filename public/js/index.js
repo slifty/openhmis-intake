@@ -1,0 +1,5 @@
+$(function() {
+	$("#intakeForm").submit(function() {
+		
+	});
+})
