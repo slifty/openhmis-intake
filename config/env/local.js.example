@@ -2,11 +2,13 @@
 
 module.exports = {
   app: {
-    title: 'Unconfigured OpenHMIS Intake',
+    title: 'OpenHMIS Intake',
     description: 'Add new clients to an OpenHMIS API compliant system',
     keywords: 'openhmis, intake'
   },
   port: 3000,
+
+  // Inser the location of the API you will access here
   api: {
     host: 'localhost',
     port: 8080

@@ -4,12 +4,21 @@
  * Module dependencies.
  */
 var _ = require('lodash'),
-  glob = require('glob');
+  glob = require('glob'),
+  chalk = require('chalk');
 
 /**
  * Load app configurations
  */
+
+var local = {}
+try {
+  local = require('./env/local');
+} catch (e) {
+  console.log(chalk.red("IMPORTANT: You have not set up your local configuration in /config/env/local.js"));
+}
 module.exports = _.extend(
+  local,
   require('./env/all')
 );
 

@@ -1,0 +1,33 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: #eee;
+}
+
+#content {
+  width: 80%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+#content h1 {
+  text-align: center;
+}
+
+form#intakeForm {
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+}
+form#intakeForm input {
+  padding: 5px;
+}
+
+
+label {
+  cursor: pointer;
+}

@@ -1,2 +1,46 @@
+doctype html
+html(lang="en")
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1')
 
-div hello world!
+    title Client Intake
+
+    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans', type='text/css')
+    link(rel='stylesheet', type='text/css', href='css/lib/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='css/main.css')
+
+    script(type='text/javascript', src='js/lib/jquery.min.js')
+    script(type='text/javascript', src='js/lib/bootstrap.min.js')
+    script(type='text/javascript', src='js/index.js')
+
+  body
+    div#content.container
+      div.row
+        div.col-xs-12
+          h1 Client Intake
+      div.row
+        div.col-md-3
+        div.col-md-6
+          form#intakeForm
+            div.form-group
+              label(for='firstName') First Name
+              input#firstName.form-control(name='firstName', type='text', value='first', placeholder='John')
+            div.form-group
+              label(for='lastName') Last Name
+              input#lastName.form-control(name='lastName', type='text', value='last', placeholder='Doe')
+            div.form-group
+              label(for='ssn') SSN
+              input#ssn.form-control(name='ssn', type='text', value='111-11-1111', placeholder='XXX-XX-XXXX')
+            div.form-group
+              label(for='dob') Date of Birth
+              input#dob.form-control(name='dob', type='text', value='22/22/2222', placeholder='MM/DD/YYYY')
+            div.form-group
+              label(for='race') Race
+              input#race.form-control(name='race', type='text', value='race', placeholder='')
+            div.form-group
+              label(for='ethnicity') Ethnicity
+              input#ethnicity.form-control(name='ethnicity', type='text', value='ethnicity', placeholder='')
+            div.form-group
+              button.btn.btn-default(type='submit') Add Client
+        div.col-md-3
+
