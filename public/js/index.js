@@ -14,12 +14,14 @@ $(function() {
   $(document).ready(function() {
     $("#searchField").keyup(function() {
       var str = $("#searchField").val();
-      if (str.length > 1) {
+      if (str.length > 0) {
         var newHits = search(str);
         var newHitsLength = newHits.length;
         alert(newHitsLength);
+        var oldHits = "#results .hit";
+        var keepers = [];
         // Create an array to hold indices of all the latest hits.
-        // var newHitIndices = []; get rid of this??? Probably can't right?
+        var newHitIndices = []; // get rid of this??? Probably can't right?
         for (var i=0; i<newHitsLength; i++) {
           newHitIndices.push(newHits[i].entity.index);
         }
@@ -43,30 +45,13 @@ $(function() {
     });
   });
 
-  var matchingTerms = ["firstName", "lastName", "pathwaysId"];
+  var matchingTerms = ["pathwaysId"];
   var matchingTermsLength = matchingTerms.length;
 
-  function Hit(entity, matchingField, matchLength) {
+  function Hit(entity, matchingField, formattedString) {
     this.entity = entity;
-    this.photo = $("<img src='img/" + this.entity.picture + "'>");
-    this.name = $("<div class='summaryElement'>");
-    this.sex = $("<div class='summaryElement'>(" + this.entity.sex + ")</div>");
-    this.dob = $("<div class='summaryElement'>" + this.entity.DOB + "</div>");
-    this.pathwaysId = $("<div class='summaryElement'>");
-    this.matchingStrings = {};
-  }
-
-  Hit.prototype.formatMatchingStrings = function() {
-    this.matchingStrings = {};
-    // Add formatting <span>s based on matchingField and matchLength.
-    for (var i=0; i < matchingTermsLength; i++) {
-      if (matchingTerms[i] == matchingField) {
-        this.matchingStrings[matchingTerms[i]] = "<span class='matched'>" + this.entity[matchingTerms[i]].substr(0, matchLength) + "</span>" + this.entity[matchingTerms[i]].substr(matchLength);
-      }
-      else {
-        this.matchingStrings[matchingTerms[i]] = this.entity[matchingTerms[i]];
-      }
-    }
+    this.matchingField = matchingField;
+    this.formattedString = formattedString
   }
 
   Hit.prototype.refreshMatchingStrings = function() {
@@ -80,6 +65,13 @@ $(function() {
 
   Hit.prototype.getSummaryDiv = function() {
     var summaryDiv = $("<div class='hit'>");
+    var photoDiv = $("<img src='img/" + this.entity.picture + "'>");
+    var sex = $("<div class='summaryElement'>(" + this.entity.sex + ")</div>");
+    var dob = $("<div class='summaryElement'>" + this.entity.DOB + "</div>");
+    // loop through the matchable fields to format as bold where appropriate
+    
+    //    this.pathwaysId = $("<div class='summaryElement'>");
+    
     this.refreshMatchingStrings();
     summaryDiv.append(this.photo);
     summaryDiv.append(this.name);
@@ -89,14 +81,89 @@ $(function() {
     return summaryDiv;
   }
 
-  function search(str) {
+  function search(userString) {
     var hits = [];
-    var strLength = str.length;
+    // Trim trailing dots and whitespace from the user's input.
+    userString = userString.replace(/^[ .]+/, "").replace (/[ .]+$/, "");
+    // Use a regex to split the string on whitespace, removing a
+    // middle initial dot (if present) in the process, and rejoin with
+    // a single space.
+    userString = userString.split(/[.]?\s+/).join(" ");
+    // Create a case-insensitive regex based on the user's entry.
+    var userRe = new RegExp("^(" + userString.replace(/\s/g, ") (") + ")", "i");
+
     var sampleDataLength = sampleData.length;
     for (var i=0; i<sampleDataLength; i++) {
+      var entity = sampleData[i];
+
+      // First check for name matches, starting with the most complex:
+      // "fname mi. lname" I was trying to do this with regexes but I
+      // don't think you can. Also I would rather save formatting for
+      // the "getSummaryDiv" but we're doing the matching now so as
+      // long as we're doing this grinding we might as well use it.
+      var entityFullName = "";
+
+      // Try to find a match on the entity's full name including
+      // middle initial. This will also find matches if the user
+      // has entered only a first name or a partial first name.
+      if (entity.middleInitial.length > 0) {
+        entityFullName += entity.firstName + " " + entity.middleInitial + " " + entity.lastName;
+        entityFullNameForDisplay = entity.firstName + " " + entity.middleInitial + ". " + entity.lastName;
+      }
+      else {
+        entityFullName += entity.firstName + " " + entity.lastName;
+        entityFullNameForDisplay = entityFullName;
+      }
+
+      var res = entityFullName.match(userRe);
+      if (res !== null) {
+        // We found a match on the full name with initial.
+        // Kludgily insert that stupid dot back into our results if appropriate.
+        if (res.length > 3) { res[2] += "."; }
+        var matchedLength = res.slice(1).join(" ").length;
+        var formattedName = "<span><span class='marked'>" + entityFullNameForDisplay.substr(0, matchedLength) + "</span>" + entityFullNameForDisplay.substr(matchedLength) + "</span>";
+        hits.push(new Hit(entity, "name", formattedName));
+      }
+      else {
+        // The user might have entered first and last names without a
+        // middle initial. Try to find a match.
+        entityFullName = entity.firstName + " " + entity.lastName;
+        res = entityFullName.match(userRe);
+        if (res !== null) {
+          // We found a match on the full name without a middle initial.
+          // We know we've matched the full first name. Find out how much
+          // of the last name was matched too.
+          var matchedLastNameLength = res[2].length;
+          var formattedName = "<span><span class='marked'>" + entity.firstName + "</span> ";
+          if (entity.middleInitial.length > 0) {
+            formattedName += entity.middleInitial + ". ";
+          }
+          formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
+          hits.push(new Hit(entity, "name", formattedName));
+        }
+        else {
+          // The user might have entered just a last name.
+          res = entity.lastName.match(userRe);
+          if (res !== null) {
+            // We found a match on just the last name.
+            var matchedLastNameLength = res[1].length;
+            var formattedName = "<span>" + entity.firstName;
+            if (entity.middleInitial.length > 0) {
+              formattedName += " " + entity.middleInitial + ". ";
+            }
+            formattedName += "</span><span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
+            hits.push(new Hit(entity, "name", formattedName));
+          }
+        }
+      }
+      // Now that we've checked for matching names, check for our other
+      // matching criteria.
+      var userStringLength = userString.length;
       for (var j=0; j<matchingTermsLength; j++) {
-        if (sampleData[i][matchingTerms[j]].substr(0, strLength).toLowerCase() == str.toLowerCase()) {
-          hits.push(new Hit(sampleData[i], matchingTerms[j], strLength));
+        var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
+        if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
+          var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
+          hits.push(new Hit(entity, matchingTerms[j], formattedString));
         }
       }
     }

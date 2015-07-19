@@ -34,6 +34,11 @@ form#intakeForm input {
   height: 400px;
 }
 
+.hit span.marked {
+  /* won't be red in production, but makes marked output more obvious for now */
+  color: red;
+}
+
 label {
   cursor: pointer;
 }
