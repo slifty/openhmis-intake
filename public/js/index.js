@@ -12,73 +12,75 @@ $(function() {
 	});
 
   $(document).ready(function() {
+    var minSearchLength = 1;
     $("#searchField").keyup(function() {
-      var str = $("#searchField").val();
-      if (str.length > 0) {
-        var newHits = search(str);
-        var newHitsLength = newHits.length;
-        alert(newHitsLength);
-        var oldHits = "#results .hit";
-        var keepers = [];
-        // Create an array to hold indices of all the latest hits.
-        var newHitIndices = []; // get rid of this??? Probably can't right?
-        for (var i=0; i<newHitsLength; i++) {
-          newHitIndices.push(newHits[i].entity.index);
-        }
-        // Mark any hits from the results window that are no longer hits for removal from the "results" div.
-        $("#results .hit").not(function () {
-           $.inArray((this).get().entity.index, newHits)
-        }).addClass("removeme");
-        // And mark any hits in "newHits" that are already in the "results" div for removal from "newHits" because we don't need to add them again.
-        $(newHits).function(function () {
-           $.inArray((this).get().entity.index, oldHits)
-        }).addClass("removeme");
-        // Now remove from the "results" div...
-        $("#results .hit.removeme").remove();
-        // And from "newHits"
-        $(newHits .removeme).remove();
-        // Any hits that remain in the results div are still matches, so refresh their matching strings
-        $("#results .hit").get().refreshMatchingStrings();
-        // And finally add whatever is left in "newHits"
-        // AND THEN I DID THAT.
+      var userString = $("#searchField").val();
+      if (userString.length >= minSearchLength) {
+        populateResults(userString);
+      }
+      else if (userString.length == 0) {
+        $("#results").empty(); // seems like this should have happened anyway, but it wasn't; look into it; also might want to shorten this comment.
       }
     });
   });
 
   var matchingTerms = ["pathwaysId"];
   var matchingTermsLength = matchingTerms.length;
+  var summaryProperties = ["name", "sex", "DOB", "pathwaysId"];
+  var summaryPropertiesLength = summaryProperties.length;
 
-  function Hit(entity, matchingField, formattedString) {
+  function populateResults(userString) {
+    var newHits = search(userString);
+    // Create an array to hold indices of all the latest hits. If an
+    // old hit isn't found in here, it gets removed.
+    var newHitIndices = [];
+    for (var i=0; i<newHits.length; i++) {
+      newHitIndices.push(newHits[i].entity.index);
+    }
+    var oldHits = $("#results .hit");
+    oldHits.each(function() {
+      // Remember these are not objects of class Hit;
+      // they're DOM elements (of class "hit").
+      var oldHitIndex = $(this).attr("data-entity-index");
+      for (var i=newHits.length-1; i>=0; i--) {
+        if (oldHitIndex == newHits[i]["entityIndex"]) {
+          // There is already a <div> in the results field that
+          // matches the one just returned; replace it with an
+          // updated version (like a longer match string).
+          $(this).empty();
+          $(this).replaceWith(getSummaryDiv(newHits[i]));
+          newHits.splice(i, 1); // remove the match from "newHits"
+        }
+      }
+      // Finally, if the entity of an old hit is no longer
+      // represented in new hits, mark it for removal from the
+      // results area.
+      if ($.inArray(oldHitIndex, newHitIndices) < 0) {
+        $(this).addClass("removeMe");
+      }
+    });
+    // Now remove from the "results" div...
+    $("#results .hit.removeMe").remove();
+    // And add all newHits...
+    for (var i=0; i<newHits.length; i++) {
+      $("#results").append(getSummaryDiv(newHits[i]));
+    }
+  }
+
+  function Hit(entity) {
     this.entity = entity;
-    this.matchingField = matchingField;
-    this.formattedString = formattedString
-  }
-
-  Hit.prototype.refreshMatchingStrings = function() {
-    var nameDiv = $(this.name);
-    var pathwaysIdDiv = $(this.pathwaysId);
-    nameDiv.empty();
-    nameDiv.append($(this.matchingStrings["lastName"] + ", " + this.matchingStrings["firstName"] + ", " + this.entity.middleInitial ));
-    pathwaysId.empty();
-    pathwaysId.append($(this.matchingStrings["pathwaysId"]));
-  }
-
-  Hit.prototype.getSummaryDiv = function() {
-    var summaryDiv = $("<div class='hit'>");
-    var photoDiv = $("<img src='img/" + this.entity.picture + "'>");
-    var sex = $("<div class='summaryElement'>(" + this.entity.sex + ")</div>");
-    var dob = $("<div class='summaryElement'>" + this.entity.DOB + "</div>");
-    // loop through the matchable fields to format as bold where appropriate
-    
-    //    this.pathwaysId = $("<div class='summaryElement'>");
-    
-    this.refreshMatchingStrings();
-    summaryDiv.append(this.photo);
-    summaryDiv.append(this.name);
-    summaryDiv.append(this.sex);
-    summaryDiv.append(this.dob);
-    summaryDiv.append(this.pathwaysID);
-    return summaryDiv;
+    this.entityIndex = entity["index"];
+    this.removeMe = false; // Used when comparing to already-matched records.
+    // The constructor already starts preparing the new object's members
+    // for their eventual lives as elements in the DOM. I'm not crazy
+    // about doing this at this stage, but wrapping them in <span>s now
+    // makes it easy to override member values with strings that match
+    // user input and that have been prewrapped in <span>s to show these
+    // matches.
+    this.picture = "<img src=\"img/" + this.entity["picture"] + "\">";
+    for (var i=0; i<summaryPropertiesLength; i++) {
+      this[summaryProperties[i]] = "<span>" + this.entity[summaryProperties[i]] + "</span>";
+    }
   }
 
   function search(userString) {
@@ -96,33 +98,32 @@ $(function() {
     for (var i=0; i<sampleDataLength; i++) {
       var entity = sampleData[i];
 
-      // First check for name matches, starting with the most complex:
-      // "fname mi. lname" I was trying to do this with regexes but I
-      // don't think you can. Also I would rather save formatting for
-      // the "getSummaryDiv" but we're doing the matching now so as
-      // long as we're doing this grinding we might as well use it.
-      var entityFullName = "";
-
       // Try to find a match on the entity's full name including
       // middle initial. This will also find matches if the user
       // has entered only a first name or a partial first name.
+      var entityFullName = entity.firstName + " ";
       if (entity.middleInitial.length > 0) {
-        entityFullName += entity.firstName + " " + entity.middleInitial + " " + entity.lastName;
-        entityFullNameForDisplay = entity.firstName + " " + entity.middleInitial + ". " + entity.lastName;
+        entityFullName += entity.middleInitial + " ";
       }
-      else {
-        entityFullName += entity.firstName + " " + entity.lastName;
-        entityFullNameForDisplay = entityFullName;
+      entityFullName += entity.lastName;
+
+      var entityDisplayName =  entity.firstName + " ";
+      if (entity.middleInitial.length > 0) {
+        entityDisplayName += entity.middleInitial + ". ";
       }
+      entityDisplayName += entity.lastName;
 
       var res = entityFullName.match(userRe);
       if (res !== null) {
-        // We found a match on the full name with initial.
-        // Kludgily insert that stupid dot back into our results if appropriate.
+        // We found a match on at least the start of the first name.
+        // Kludgily insert that stupid dot back into our results if
+        // appropriate.
         if (res.length > 3) { res[2] += "."; }
         var matchedLength = res.slice(1).join(" ").length;
-        var formattedName = "<span><span class='marked'>" + entityFullNameForDisplay.substr(0, matchedLength) + "</span>" + entityFullNameForDisplay.substr(matchedLength) + "</span>";
-        hits.push(new Hit(entity, "name", formattedName));
+        var formattedName = "<span><span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength) + "</span>";
+        var newHit = new Hit(entity);
+        newHit["name"] = formattedName;
+        hits.push(newHit);
       }
       else {
         // The user might have entered first and last names without a
@@ -139,7 +140,9 @@ $(function() {
             formattedName += entity.middleInitial + ". ";
           }
           formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
-          hits.push(new Hit(entity, "name", formattedName));
+          var newHit = new Hit(entity);
+          newHit["name"] = formattedName;
+          hits.push(newHit);
         }
         else {
           // The user might have entered just a last name.
@@ -152,7 +155,9 @@ $(function() {
               formattedName += " " + entity.middleInitial + ". ";
             }
             formattedName += "</span><span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
-            hits.push(new Hit(entity, "name", formattedName));
+            var newHit = new Hit(entity);
+            newHit["name"] = formattedName;
+            hits.push(newHit);
           }
         }
       }
@@ -163,10 +168,31 @@ $(function() {
         var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
           var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
-          hits.push(new Hit(entity, matchingTerms[j], formattedString));
+          entity["name"] = entityFullName;
+          var newHit = new Hit(entity);
+          newHit[matchingTerms[j]] = formattedString;
+          hits.push(newHit);
         }
       }
     }
     return hits;
+  }
+
+  function getSummaryDiv(hit) {
+    var summaryDiv = $("<div class='hit' data-entity-index='" + hit.entityIndex + "'></div>");
+    var picture = $("<div class='picture'>" + hit.picture + "</div>");
+    var text = $("<div class='text'></div>");
+    // I should be looping through these instead of doing all explicity. DEAL WITH THIS LATER.
+    var name = $("<div class='summaryElement'>" + hit.formattedName + "</div>");
+    var sex = $("<div class='summaryElement clear'>(" + hit.sex + ")</div>");
+    var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
+    var pathwaysId = $("<div class='summaryElement'>" + hit.pathwaysId + "</div>");
+    summaryDiv.append(picture);
+    text.append(name);
+    text.append(sex);
+    text.append(dob);
+    text.append(pathwaysId);
+    summaryDiv.append(text);
+    return summaryDiv;
   }
 })
