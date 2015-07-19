@@ -10,6 +10,7 @@ body {
 
 #content {
   width: 80%;
+  height: 500px;
   max-width: 600px;
   margin: 10px auto;
 }
@@ -18,15 +19,20 @@ body {
   text-align: center;
 }
 
-form#intakeForm {
+#main {
   background: #fff;
-  padding: 10px;
+  padding: 15px;
   border-radius: 10px;
 }
 form#intakeForm input {
-  padding: 5px;
+  height: 50px;
 }
 
+#results {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 400px;
+}
 
 label {
   cursor: pointer;
