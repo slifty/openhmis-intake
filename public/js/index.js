@@ -26,8 +26,6 @@ $(function() {
 
   var matchingTerms = ["pathwaysId"];
   var matchingTermsLength = matchingTerms.length;
-  var summaryProperties = ["name", "sex", "DOB", "pathwaysId"];
-  var summaryPropertiesLength = summaryProperties.length;
 
   function populateResults(userString) {
     var newHits = search(userString);
@@ -35,7 +33,7 @@ $(function() {
     // old hit isn't found in here, it gets removed.
     var newHitIndices = [];
     for (var i=0; i<newHits.length; i++) {
-      newHitIndices.push(newHits[i].entity.index);
+      newHitIndices.push(newHits[i].entityIndex);
     }
     var oldHits = $("#results .hit");
     oldHits.each(function() {
@@ -68,7 +66,6 @@ $(function() {
   }
 
   function Hit(entity) {
-    this.entity = entity;
     this.entityIndex = entity["index"];
     this.removeMe = false; // Used when comparing to already-matched records.
     // The constructor already starts preparing the new object's members
@@ -77,10 +74,10 @@ $(function() {
     // makes it easy to override member values with strings that match
     // user input and that have been prewrapped in <span>s to show these
     // matches.
-    this.picture = "<img src=\"img/" + this.entity["picture"] + "\">";
-    for (var i=0; i<summaryPropertiesLength; i++) {
-      this[summaryProperties[i]] = "<span>" + this.entity[summaryProperties[i]] + "</span>";
-    }
+    this.picture = "<img src=\"img/" + entity["picture"] + "\">";
+    this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
+    this.DOB = "<span>" + entity.DOB + "</span>";
+    this.pathwaysId = "<span>" + entity.pathwaysId + "</span>";
   }
 
   function search(userString) {
@@ -168,8 +165,8 @@ $(function() {
         var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
           var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
-          entity["name"] = entityFullName;
           var newHit = new Hit(entity);
+          newHit["name"] = "<span>" + entityFullName + "</span>";
           newHit[matchingTerms[j]] = formattedString;
           hits.push(newHit);
         }
@@ -183,8 +180,8 @@ $(function() {
     var picture = $("<div class='picture'>" + hit.picture + "</div>");
     var text = $("<div class='text'></div>");
     // I should be looping through these instead of doing all explicity. DEAL WITH THIS LATER.
-    var name = $("<div class='summaryElement'>" + hit.formattedName + "</div>");
-    var sex = $("<div class='summaryElement clear'>(" + hit.sex + ")</div>");
+    var name = $("<div class='summaryElement'>" + hit.name + "</div>");
+    var sex = $("<div class='summaryElement clear'>" + hit.sex + "</div>");
     var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
     var pathwaysId = $("<div class='summaryElement'>" + hit.pathwaysId + "</div>");
     summaryDiv.append(picture);

@@ -55,6 +55,7 @@ form#intakeForm input {
 .hit .summaryElement {
   height: 35px;
   float: left;
+  padding: 0px 10px;
 }
 
 .hit .clear {
