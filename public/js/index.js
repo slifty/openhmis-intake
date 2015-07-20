@@ -1,5 +1,6 @@
 $(function() {
 	$("#intakeForm").submit(function() {
+    /* This was crashing my server for some reason
 		var data = $(this).serialize();
     $.ajax("client", {
       method: "POST",
@@ -8,6 +9,7 @@ $(function() {
     .done(function(d) {
       console.log(d);
     });
+    */
     switchToSearch();
     return false;
 	});
@@ -88,7 +90,8 @@ $(function() {
     this.picture = "<img src=\"img/" + entity["picture"] + "\">";
     this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
     this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
-    this.pathwaysId = "<span class='label'>Pathways ID: </span><span>" + entity.pathwaysId + "</span>";
+    this.age = "<span class='label'>age: </span><span>" + entity.age + "</span>";
+    this.pathwaysId = "<span class='label'>CID: </span><span>" + entity.pathwaysId + "</span>";
   }
 
   function search(userString) {
@@ -108,17 +111,8 @@ $(function() {
       // Try to find a match on the entity's full name including
       // middle initial. This will also find matches if the user
       // has entered only a first name or a partial first name.
-      var entityFullName = entity.firstName + " ";
-      if (entity.middleInitial.length > 0) {
-        entityFullName += entity.middleInitial + " ";
-      }
-      entityFullName += entity.lastName;
-
-      var entityDisplayName =  entity.firstName + " ";
-      if (entity.middleInitial.length > 0) {
-        entityDisplayName += entity.middleInitial + ". ";
-      }
-      entityDisplayName += entity.lastName;
+      var entityFullName = getEntityName(entity, true, false); // with MI, without dot
+      var entityDisplayName =  getEntityName(entity, true, true); // with MI, with dot
 
       var res = entityFullName.match(userRe);
       if (res !== null) {
@@ -135,8 +129,8 @@ $(function() {
       else {
         // The user might have entered first and last names without a
         // middle initial. Try to find a match.
-        entityFullName = entity.firstName + " " + entity.lastName;
-        res = entityFullName.match(userRe);
+        entityFirstAndLast = getEntityName(entity, false); // without MI
+        res = entityFirstAndLast.match(userRe);
         if (res !== null) {
           // We found a match on the full name without a middle initial.
           // We know we've matched the full first name. Find out how much
@@ -176,13 +170,26 @@ $(function() {
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
           var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
           var newHit = new Hit(entity);
-          newHit["name"] = "<span>" + entityFullName + "</span>";
+          newHit["name"] = "<span>" + entityDisplayName + "</span>";
           newHit[matchingTerms[j]] = formattedString;
           hits.push(newHit);
         }
       }
     }
     return hits;
+  }
+
+  function getEntityName(entity, useMI, useDot) {
+    useMI = useMI == undefined ? true : useMI;
+    useDot = useMI == true ? (useDot == undefined ? true : useDot) : false;
+    var entityName = entity.firstName + " ";
+    if (entity.middleInitial.length > 0) {
+      if (useMI == true) {
+        entityName += entity.middleInitial + (useDot ? "." : "") + " ";
+      }      
+    }
+    entityName += entity.lastName;
+    return entityName;
   }
 
   function getSummaryDiv(hit) {
@@ -193,6 +200,7 @@ $(function() {
     var sex = $("<div class='summaryElement'>" + hit.sex + "</div>");
     var clear1 = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
+    var age = $("<div class='summaryElement'>" + hit.age + "</div>");
     var clear2 = $("<div class='clear'></div>");
     var pathwaysId = $("<div class='summaryElement'>" + hit.pathwaysId + "</div>");
     summaryDiv.append(picture);
@@ -200,6 +208,7 @@ $(function() {
     text.append(sex);
     text.append(clear1);
     text.append(dob);
+    text.append(age);
     text.append(clear2);
     text.append(pathwaysId);
     summaryDiv.append(text);
@@ -208,7 +217,7 @@ $(function() {
   }
 
   function switchToSearch() {
-    $("#searchField").empty();
+    $("#searchField").val("");
     $("#results").empty();
     $("#search").css("display", "block");
     $("#intake").css("display", "none");
@@ -216,6 +225,7 @@ $(function() {
 
   function switchToIntake(entityIndex) {
     document.getElementById("intakeForm").reset();
+    $("#intakeForm .picture").empty();
     var entity = null;
     if (entityIndex < 0) { // New client
       entity = new Entity();
@@ -224,6 +234,21 @@ $(function() {
       for (var i=0; i<sampleDataLength; i++) {
         if (sampleData[i]["index"] == entityIndex) {
           entity = sampleData[i];
+        }
+      }
+    }
+    if (entity !== null) {
+      // Fill in the picture
+      $("#intakeForm .picture").append($("<img src=\"img/" + entity["picture"] + "\">"));
+      // Fill in the name field
+      $("#intakeForm #fullName").val(getEntityName(entity));
+      // Fill in other fields
+      for (prop in entity) {
+        elem = $("#intakeForm #"+prop);
+        if (elem !== null) {
+          if (elem.is("input")) {
+            elem.val(entity[prop]);
+          }
         }
       }
     }

@@ -3,6 +3,10 @@ body {
   background: #eee;
 }
 
+.clear {
+  clear: both;
+}
+
 #search, #intake {
   min-width: 500px;
   max-width: 600px;
@@ -17,24 +21,69 @@ body {
   display: none;
 }
 
-#intake input {
-  height: 30px;
+#intakeForm .picture {
+  float: left;
 }
 
-#intake .selectBox {
+#intakeForm .picture img {
+  width: 75px;
+  height: 76px;
+}
+
+#intakeForm #intakeSummary {
+  margin-left: 75px;
+}
+
+#intakeForm #fullName, #intakeForm #SSN, #intakeForm #pathwaysId {
+  overflow: hidden;
+}
+
+#intakeForm .label {
+  color: black;
+  display: inline-block;
+  text-align: left;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+#intakeForm input[type=text] {
+  height: 38px;
+  padding-left: 5px;
+}
+
+#intakeForm input[type=checkbox] {
+  padding: 0px;
+  display: inline-block;
+}
+
+#intakeForm #selectBoxes {
+  margin: 10px 0px;
+}
+
+#intakeForm .selectBox {
   height: 25px;
   border: none;
   display: inline-block;
+  margin-top: 3px;
   padding-top: 5px;
+  text-align: center;
 }
 
-#intake .selectBox select {
+#intakeForm .checkboxBox {
+  height: 0px;
+  padding-left: 0.6em;
+  margin: 0px;
+  display: inline-block;
+  text-align: left;
+}
+
+#intakeForm .selectBox select {
   width: 100%;
 }
 
-#intake button {
+#intakeForm button {
   float: right;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .pct33 {
@@ -64,6 +113,7 @@ body {
 .main {
   background: #fff;
   padding: 15px;
+  border: 2px solid #ccc;
   border-radius: 10px;
 }
 
@@ -81,7 +131,8 @@ body {
 .hit {
   border: 1px solid  #ccc;
   border-collapse: collapse;
-  background-color: #008;
+  border-radius: 4px;
+  background-color: #058;
   height: 77px;
   color: white;
   clear: both;
@@ -102,15 +153,13 @@ body {
   padding: 0px 10px;
 }
 
-.hit .clear {
-  clear: both;
+.hit .summaryElement .label {
+  padding-left: 0px;
 }
+
 
 .hit span.marked {
   /* won't be red in production, but makes marked output more obvious for now */
   color: red;
 }
 
-label {
-  cursor: pointer;
-}
