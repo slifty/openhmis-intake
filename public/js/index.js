@@ -1,4 +1,8 @@
 $(function() {
+  $("#searchForm").submit(function() {
+    switchToIntake(-1);
+    return false;
+  });
 	$("#intakeForm").submit(function() {
     /* This was crashing my server for some reason
 		var data = $(this).serialize();
@@ -28,9 +32,7 @@ $(function() {
     $("#results").on("click", ".hit", function(e) {
       switchToIntake($(e.currentTarget).data("entity-index"));
     });
-    $("#returnToSearch").on("click", function(e) {
-      switchToSearch();
-    });
+    switchToSearch();
   });
 
   var sampleDataLength = sampleData.length;
@@ -72,6 +74,16 @@ $(function() {
     // And add all newHits...
     for (var i=0; i<newHits.length; i++) {
       $("#results").append(getSummaryDiv(newHits[i]));
+    }
+    // At this point, if "results" is empty, activate the "add new
+    // client" button.
+    if ($("#results > .hit").length == 0) {
+      $("#addNewClient").prop("disabled", false);
+    }
+    // Otherwise deactivate it. This ensures that we can only add a
+    // client when we're sure (s)he isn't already in the database.
+    else {
+      $("#addNewClient").prop("disabled", true);
     }
   }
 
@@ -219,6 +231,7 @@ $(function() {
   function switchToSearch() {
     $("#searchField").val("");
     $("#results").empty();
+    $("#addNewClient").prop("disabled", true);
     $("#search").css("display", "block");
     $("#intake").css("display", "none");
   }
@@ -229,6 +242,10 @@ $(function() {
     var entity = null;
     if (entityIndex < 0) { // New client
       entity = new Entity();
+      // Fill in the picture with the unknown icon
+      $("#intakeForm .picture").append($("<img src=\"img/unknown.png\">"));
+      // Fill in the name field with whatever the user had typed
+      $("#intakeForm #fullName").val($("#searchForm #searchField").val());
     }
     else {
       for (var i=0; i<sampleDataLength; i++) {
@@ -236,18 +253,18 @@ $(function() {
           entity = sampleData[i];
         }
       }
-    }
-    if (entity !== null) {
-      // Fill in the picture
-      $("#intakeForm .picture").append($("<img src=\"img/" + entity["picture"] + "\">"));
-      // Fill in the name field
-      $("#intakeForm #fullName").val(getEntityName(entity));
-      // Fill in other fields
-      for (prop in entity) {
-        elem = $("#intakeForm #"+prop);
-        if (elem !== null) {
-          if (elem.is("input")) {
-            elem.val(entity[prop]);
+      if (entity !== null) {
+        // Fill in the picture
+        $("#intakeForm .picture").append($("<img src=\"img/" + entity["picture"] + "\">"));
+        // Fill in the name field
+        $("#intakeForm #fullName").val(getEntityName(entity));
+        // Fill in other fields
+        for (prop in entity) {
+          elem = $("#intakeForm #"+prop);
+          if (elem !== null) {
+            if (elem.is("input")) {
+              elem.val(entity[prop]);
+            }
           }
         }
       }

@@ -16,81 +16,69 @@ html(lang="en")
 
   body
     div#search.container
-      div.row
-        div.col-xs-12
-          h1 Client Search
-      div.row
-        div.main.col-xs-8.col-xs-offset-2
-          form#searchForm
-            div.form-group
-              input#searchField.form-control(name='searchField', type='text', placeholder='name or CID')
-          div#results
+      h1 Client Search
+      form#searchForm
+        div.form-group
+          input#searchField.form-control(name='searchField', type='text', placeholder='name or CID')
+        div#results
+        button#addNewClient(type='submit') add new client
     div#intake.container
-      div.row
-        div.col-xs-12
-          h1 Client Intake
-      div.row
-        div.main.col-xs-8.col-xs-offset-2
-          form#intakeForm
-            div
-              div.picture
-              div#intakeSummary
-                input.pct100#fullName(name='fullName', type='text', placeholder='full name')
-                input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
-                input.pct50#pathwaysId(name='pathwaysId', type='text', placeholder='CID')
-            div.label.pct100 street address
-            input.pct100#address(name='address', type='text')
-            div.label.pct33 city
-            div.label.pct33 state
-            div.label.pct34 zip
-            input.pct33#city(name='city', type='text')
-            input.pct33#state(name='state', type='text')
-            input.pct34#zip(name='zip', type='text')
-            div.label.pct67 date of birth
-            div.label.pct33 age
-            input.pct67#DOB(name='DOB', type='text', placeholder='date of birth')
-            input.pct33#age(name='age', type='text', placeholder='age')
-            div#selectBoxes
-              .selectBox.pct33
-                select#sex(name='sex')
-                  option(value='') sex
-                  option(value='M') M
-                  option(value='F') F
-              .selectBox.pct67
-                select#housingStatus(name='housingStatus')
-                  option(value='') housing status
-                  option(value='homeless') homeless
-                  option(value='homeless-only-under-other-federal-statutes') homeless only under other federal statutes
-                  option(value='at-imminent-risk-of-losing-housing') at imminent risk of losing housing
-                  option(value='fleeing-domestic-violence') fleeing domestic violence
-                  option(value='at-risk-of-homelessness') at risk of homelessness
-                  option(value='stably-housed') stably housed
-              .selectBox.pct50
-                select#race(name='race')
-                  option(value='') race
-                  option(value='asian') Asian
-                  option(value='black-african-american') Black/African American
-                  option(value='american-indian-alaskan') American Indian/Alaskan
-                  option(value='white') White
-                  option(value='pacific islander') Pacific Islander
-                  option(value='other') Other
-              .selectBox.pct50
-                select#ethnicity(name='ethnicity')
-                  option(value='') ethnicity
-                  option(value='hispanic') hispanic
-                  option(value='non-hispanic') non-hispanic
-            div.label.pct33 disabling condition?
-            div.label.pct33 chronically homeless?
-            div.label.pct34 veteran?
-            div.checkboxBox.pct33
-              input(name='disabling-condition' type='checkbox')
-            div.checkboxBox.pct33
-              input(name='chronically-homeless' type='checkbox')
-            div.checkboxBox.pct34
-              input(name='veteran' type='checkbox')
-
-             button#submit(type='submit') Commit
-
-
-
-
+      h1 Client Intake
+      form#intakeForm
+        div
+          div.picture
+          div#intakeSummary
+            input.pct100#fullName(name='fullName', type='text', placeholder='full name')
+            input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
+            input.pct50#pathwaysId(name='pathwaysId', type='text', placeholder='CID')
+        div.label.pct100 street address
+        input.pct100#address(name='address', type='text')
+        div.label.pct33 city
+        div.label.pct33 state
+        div.label.pct34 zip
+        input.pct33#city(name='city', type='text')
+        input.pct33#state(name='state', type='text')
+        input.pct34#zip(name='zip', type='text')
+        div.label.pct67 date of birth
+        div.label.pct33 age
+        input.pct67#DOB(name='DOB', type='text', placeholder='date of birth')
+        input.pct33#age(name='age', type='text', placeholder='age')
+        div#selectBoxes
+          .selectBox.pct33
+            select#sex(name='sex')
+              option(value='') sex
+              option(value='M') M
+              option(value='F') F
+          .selectBox.pct67
+            select#housingStatus(name='housingStatus')
+              option(value='') housing status
+              option(value='homeless') homeless
+              option(value='homeless-only-under-other-federal-statutes') homeless only under other federal statutes
+              option(value='at-imminent-risk-of-losing-housing') at imminent risk of losing housing
+              option(value='fleeing-domestic-violence') fleeing domestic violence
+              option(value='at-risk-of-homelessness') at risk of homelessness
+              option(value='stably-housed') stably housed
+          .selectBox.pct50
+            select#race(name='race')
+              option(value='') race
+              option(value='asian') Asian
+              option(value='black-african-american') Black/African American
+              option(value='american-indian-alaskan') American Indian/Alaskan
+              option(value='white') White
+              option(value='pacific islander') Pacific Islander
+              option(value='other') Other
+          .selectBox.pct50
+            select#ethnicity(name='ethnicity')
+              option(value='') ethnicity
+              option(value='hispanic') hispanic
+              option(value='non-hispanic') non-hispanic
+        div.label.pct33 disabling condition?
+        div.label.pct33 chronically homeless?
+        div.label.pct34 veteran?
+        div.checkboxBox.pct33
+          input(name='disabling-condition' type='checkbox')
+        div.checkboxBox.pct33
+          input(name='chronically-homeless' type='checkbox')
+        div.checkboxBox.pct34
+          input(name='veteran' type='checkbox')
+        button#commitChanges(type='submit') commit changes

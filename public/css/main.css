@@ -8,17 +8,13 @@ body {
 }
 
 #search, #intake {
-  min-width: 500px;
-  max-width: 600px;
+  width: 450px;
   margin: 10px auto;
-}
-
-#search {
-  display: block;
-}
-
-#intake {
   display: none;
+}
+
+#intakeForm {
+  height: 450px;
 }
 
 #intakeForm .picture {
@@ -81,9 +77,18 @@ body {
   width: 100%;
 }
 
+#searchForm button {
+  float: right;
+  margin-top: 15px;
+}
+
+#searchForm button:disabled {
+  color: #ccc;
+}
+
 #intakeForm button {
   float: right;
-  margin-top: 20px;
+  margin-top: 80px;
 }
 
 .pct33 {
@@ -106,15 +111,18 @@ body {
   width: 100%;
 }
 
-.container h1 {
-  text-align: center;
-}
-
-.main {
+.container {
   background: #fff;
   padding: 15px;
   border: 2px solid #ccc;
   border-radius: 10px;
+  height: 600px;
+}
+
+.container h1 {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 #searchForm input {
@@ -124,7 +132,7 @@ body {
 #results {
   border: 1px solid #ccc;
   border-radius: 4px;
-  height: 400px;
+  height: 390px;
   overflow-y: scroll;
 }
 
