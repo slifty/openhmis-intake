@@ -37,14 +37,15 @@ form#intakeForm input {
 
 .hit {
   border: 1px solid  #ccc;
+  border-collapse: collapse;
   background-color: #008;
-  height: 72px;
+  height: 77px;
   color: white;
   clear: both;
 }
 
 .hit .picture, .hit .text {
-  height: 72px;
+  height: 75px;
   float: left;
 }
 
