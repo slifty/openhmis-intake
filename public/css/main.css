@@ -1,6 +1,19 @@
 body {
   font-family: 'Open Sans', sans-serif;
   background: #eee;
+  background-image: url("../img/Midtown_HDR_Atlanta_smaller.jpg");
+  background-position: center;
+}
+
+#logos {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+#logos #gaDCA {
+  width: 60px;
+  height: 60px;
 }
 
 .clear {
@@ -112,6 +125,7 @@ body {
 }
 
 .container {
+  position: relative;
   background: #fff;
   padding: 15px;
   border: 2px solid #ccc;
