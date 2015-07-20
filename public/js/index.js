@@ -8,6 +8,7 @@ $(function() {
     .done(function(d) {
       console.log(d);
     });
+    switchToSearch();
     return false;
 	});
 
@@ -22,8 +23,15 @@ $(function() {
         $("#results").empty(); // seems like this should have happened anyway, but it wasn't; look into it; also might want to shorten this comment.
       }
     });
+    $("#results").on("click", ".hit", function(e) {
+      switchToIntake($(e.currentTarget).data("entity-index"));
+    });
+    $("#returnToSearch").on("click", function(e) {
+      switchToSearch();
+    });
   });
 
+  var sampleDataLength = sampleData.length;
   var matchingTerms = ["pathwaysId"];
   var matchingTermsLength = matchingTerms.length;
 
@@ -39,7 +47,7 @@ $(function() {
     oldHits.each(function() {
       // Remember these are not objects of class Hit;
       // they're DOM elements (of class "hit").
-      var oldHitIndex = $(this).attr("data-entity-index");
+      var oldHitIndex = $(this).data("entity-index");
       for (var i=newHits.length-1; i>=0; i--) {
         if (oldHitIndex == newHits[i]["entityIndex"]) {
           // There is already a <div> in the results field that
@@ -65,6 +73,9 @@ $(function() {
     }
   }
 
+  function Entity() {
+  }
+
   function Hit(entity) {
     this.entityIndex = entity["index"];
     this.removeMe = false; // Used when comparing to already-matched records.
@@ -76,8 +87,8 @@ $(function() {
     // matches.
     this.picture = "<img src=\"img/" + entity["picture"] + "\">";
     this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
-    this.DOB = "<span>" + entity.DOB + "</span>";
-    this.pathwaysId = "<span>" + entity.pathwaysId + "</span>";
+    this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
+    this.pathwaysId = "<span class='label'>Pathways ID: </span><span>" + entity.pathwaysId + "</span>";
   }
 
   function search(userString) {
@@ -91,7 +102,6 @@ $(function() {
     // Create a case-insensitive regex based on the user's entry.
     var userRe = new RegExp("^(" + userString.replace(/\s/g, ") (") + ")", "i");
 
-    var sampleDataLength = sampleData.length;
     for (var i=0; i<sampleDataLength; i++) {
       var entity = sampleData[i];
 
@@ -176,20 +186,48 @@ $(function() {
   }
 
   function getSummaryDiv(hit) {
-    var summaryDiv = $("<div class='hit' data-entity-index='" + hit.entityIndex + "'></div>");
+    var summaryDiv = $("<div class='hit'></div>");
     var picture = $("<div class='picture'>" + hit.picture + "</div>");
     var text = $("<div class='text'></div>");
-    // I should be looping through these instead of doing all explicity. DEAL WITH THIS LATER.
     var name = $("<div class='summaryElement'>" + hit.name + "</div>");
-    var sex = $("<div class='summaryElement clear'>" + hit.sex + "</div>");
+    var sex = $("<div class='summaryElement'>" + hit.sex + "</div>");
+    var clear1 = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
+    var clear2 = $("<div class='clear'></div>");
     var pathwaysId = $("<div class='summaryElement'>" + hit.pathwaysId + "</div>");
     summaryDiv.append(picture);
     text.append(name);
     text.append(sex);
+    text.append(clear1);
     text.append(dob);
+    text.append(clear2);
     text.append(pathwaysId);
     summaryDiv.append(text);
+    summaryDiv.data("entity-index", hit.entityIndex);
     return summaryDiv;
+  }
+
+  function switchToSearch() {
+    $("#searchField").empty();
+    $("#results").empty();
+    $("#search").css("display", "block");
+    $("#intake").css("display", "none");
+  }
+
+  function switchToIntake(entityIndex) {
+    document.getElementById("intakeForm").reset();
+    var entity = null;
+    if (entityIndex < 0) { // New client
+      entity = new Entity();
+    }
+    else {
+      for (var i=0; i<sampleDataLength; i++) {
+        if (sampleData[i]["index"] == entityIndex) {
+          entity = sampleData[i];
+        }
+      }
+    }
+    $("#search").css("display", "none");
+    $("#intake").css("display", "block");
   }
 })

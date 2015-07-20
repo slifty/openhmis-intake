@@ -1,30 +1,73 @@
-* {
-  margin: 0px;
-  padding: 0px;
-}
-
 body {
   font-family: 'Open Sans', sans-serif;
   background: #eee;
 }
 
-#content {
-  width: 80%;
-  height: 500px;
+#search, #intake {
+  min-width: 500px;
   max-width: 600px;
   margin: 10px auto;
 }
 
-#content h1 {
+#search {
+  display: block;
+}
+
+#intake {
+  display: none;
+}
+
+#intake input {
+  height: 30px;
+}
+
+#intake .selectBox {
+  height: 25px;
+  border: none;
+  display: inline-block;
+  padding-top: 5px;
+}
+
+#intake .selectBox select {
+  width: 100%;
+}
+
+#intake button {
+  float: right;
+  margin-top: 10px;
+}
+
+.pct33 {
+  width: 33%;
+}
+
+.pct34 {
+  width: 34%;
+}
+
+.pct50 {
+  width: 50%;
+}
+
+.pct67 {
+  width: 67%;
+}
+
+.pct100 {
+  width: 100%;
+}
+
+.container h1 {
   text-align: center;
 }
 
-#main {
+.main {
   background: #fff;
   padding: 15px;
   border-radius: 10px;
 }
-form#intakeForm input {
+
+#searchForm input {
   height: 50px;
 }
 
@@ -42,6 +85,7 @@ form#intakeForm input {
   height: 77px;
   color: white;
   clear: both;
+  cursor: pointer;
 }
 
 .hit .picture, .hit .text {
@@ -54,7 +98,6 @@ form#intakeForm input {
 }
 
 .hit .summaryElement {
-  height: 35px;
   float: left;
   padding: 0px 10px;
 }

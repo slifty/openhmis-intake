@@ -3,7 +3,7 @@ html(lang="en")
   head
     meta(name='viewport', content='width=device-width, initial-scale=1')
 
-    title Client Intake
+    title HMIS
 
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans', type='text/css')
     link(rel='stylesheet', type='text/css', href='css/lib/bootstrap.min.css')
@@ -15,15 +15,68 @@ html(lang="en")
     script(type='text/javascript', src='js/index.js')
 
   body
-    div#content.container
-      div#title.row
+    div#search.container
+      div.row
+        div.col-xs-12
+          h1 Client Search
+      div.row
+        div.main.col-xs-8.col-xs-offset-2
+          form#intakeForm
+            div.form-group
+              input#searchField.form-control(name='searchField', type='text', placeholder='name, SSN, or Pathways Client Key')
+          div#results
+    div#intake.container
+      div.row
         div.col-xs-12
           h1 Client Intake
       div.row
-        div.col-md-8.col-md-offset-2
-          div#main
-            form#intakeForm
-              div.form-group
-                input#searchField.form-control(name='searchField', type='text', placeholder='name, SSN, or Pathways Client Key')
-            div#results
+        div.main.col-xs-8.col-xs-offset-2
+          form#intakeForm
+            input.pct100#fullName(name='fullName', type='text', placeholder='full name')
+            input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
+            input.pct50#pathwaysId(name='pathwaysId', type='text', placeholder='Pathways client key')
+            input.pct100#address(name='address', type='text', placeholder='street address')
+            input.pct33#city(name='city', type='text', placeholder='city')
+            input.pct33#state(name='state', type='text', placeholder='state')
+            input.pct34#zip(name='zip', type='text', placeholder='zip')
+            input.pct33#DOB(name='DOB', type='text', placeholder='date of birth')
+            input.pct67#relationship(name='relationship', type='text', placeholder='relationship to head of household')
+            .selectBox.pct33
+              select#sex(name='sex')
+                option(value='') sex
+                option(value='M') M
+                option(value='F') F
+            .selectBox.pct33
+              select#ethnicity(name='ethnicity')
+                option(value='') ethnicity
+                option(value='hispanic') hispanic
+                option(value='non-hispanic') non-hispanic
+            .selectBox.pct34
+              select#veteran(name='veteran')
+                option(value='') veteran
+                option(value='yes') yes
+                option(value='no') no
+            .selectBox.pct50
+              select#disabling-condition(name='disabling-condition')
+                option(value='') disabling condition
+                option(value='yes') yes
+                option(value='no') no
+            .selectBox.pct50
+              select#chronically-homeless(name='chronically-homeless')
+                option(value='') chronically homeless
+                option(value='yes') yes
+                option(value='no') no
+            .selectBox.pct100
+              select#race(name='race')
+                option(value='') race
+                option(value='asian') Asian
+                option(value='black-african-american') Black/African American
+                option(value='american-indian-alaskan') American Indian/Alaskan
+                option(value='white') White
+                option(value='pacific islander') Pacific Islander
+                option(value='other') Other
+             button#returnToSearch(name='returnToSearch') Return to Search
+
+
+
 
