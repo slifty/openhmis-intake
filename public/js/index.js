@@ -266,7 +266,7 @@ $(function() {
       entity.index = sampleDataLength;
       entity.picture = "unknown.png";
       entity.fullName = $("#searchForm #searchField").val();
-      entity.sex = "male"; // hard code this for now to prevent an error on reading
+      entity.sex = "female"; // hard code this for now to prevent an error on reading
       entity.CID = "a7f8hvx3";  // this too.
       sampleData.push(entity);
     }
