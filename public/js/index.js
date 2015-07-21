@@ -90,12 +90,20 @@ $(function() {
     // makes it easy to override member values with strings that match
     // user input and that have been prewrapped in <span>s to show these
     // matches.
+    // Actually the more I work with this, the more the problems of having
+    // these preformatted strings in the object become apparent. I must find
+    // a better way... later
     this.picture = "<img src=\"img/" + entity["picture"] + "\">";
     this.fullName = "<span>" +  getEntityName(entity) + "</span>";
     this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
     this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
     this.age = "<span class='label'>age: </span><span>" + entity.age + "</span>";
     this.CID = "<span class='label'>CID: </span><span>" + entity.CID + "</span>";
+  }
+
+  // This method is terrible. See comment imm. above re: dissatisfaction.
+  Hit.prototype.updateProperty = function(propertyName, propertyValue) {
+    this[propertyName] = "<span class='label'>" + propertyName + ": </span><span>" + propertyValue + "</span>";
   }
 
   function HitFactory() {
@@ -200,7 +208,7 @@ $(function() {
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
           var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
           var hit = hitFactory.getHit(entity);
-          hit[matchingTerms[j]] = formattedString;
+          hit.updateProperty(matchingTerms[j], formattedString);
         }
       }
     }

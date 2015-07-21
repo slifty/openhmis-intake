@@ -70,7 +70,7 @@ var sampleData =
     "city": "Bedias",
     "state": "Puerto Rico",
     "zip": 39564,
-    "DOB": "19 November 1992",
+    "DOB": "19 June 1992",
     "age": 23,
     "sex": "female",
     "ethnicity": "Hispanic",
