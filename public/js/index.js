@@ -1,6 +1,9 @@
 $(function() {
   $(document).ready(function() {
+    // minimum search length needed to start looking for matches.
     var minSearchLength = 1;
+
+    // event handlers
     $("#searchField").keyup(function() {
       var userString = $("#searchField").val();
       if (userString.length >= minSearchLength) {
