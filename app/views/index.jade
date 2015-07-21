@@ -34,7 +34,7 @@ html(lang="en")
             div.picture
             div#intakeSummary
               input.pct100#fullName(name='fullName', type='text', placeholder='full name')
-              input.pct50#readOnlySSN(name='SSN', type='text', placeholder='SSN', readonly)
+              input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
               input.pct50#readOnlyCID(name='CID', type='text', placeholder='CID', readonly)
           div.label.pct100 street address
           input.pct100#address(name='address', type='text')
@@ -86,6 +86,7 @@ html(lang="en")
             input(name='chronically-homeless' type='checkbox')
           div.checkboxBox.pct34
             input(name='veteran' type='checkbox')
+          input.pct100#index(name='index', type='hidden')
           div.buttonBox
             button#backToResults(type='button') Back to Results
-            button#saveChanges(type='submit') Save Changes
+            button#saveChanges(type='button') Save Changes

@@ -1,19 +1,4 @@
 $(function() {
-  $("#intakeForm").submit(function() {
-    /* This was crashing my server for some reason
-		var data = $(this).serialize();
-    $.ajax("client", {
-      method: "POST",
-      data: data,
-    })
-    .done(function(d) {
-      console.log(d);
-    });
-    */
-    switchToSearch();
-    return false;
-	});
-
   $(document).ready(function() {
     var minSearchLength = 1;
     $("#searchField").keyup(function() {
@@ -34,10 +19,14 @@ $(function() {
     $("#backToResults").click(function() {
       switchToSearch(true);
     });
+    $("#saveChanges").click(function() {
+      saveChanges();
+      switchToSearch(false);
+    });
+
     switchToSearch();
   });
 
-  var sampleDataLength = sampleData.length;
   var matchingTerms = ["CID"];
   var matchingTermsLength = matchingTerms.length;
 
@@ -147,6 +136,7 @@ $(function() {
     // ID. The value is the Hit instance.
     var hitFactory = new HitFactory();
 
+    var sampleDataLength = sampleData.length;
     for (var i=0; i<sampleDataLength; i++) {
       var entity = sampleData[i];
 
@@ -220,10 +210,10 @@ $(function() {
     useMI = useMI == undefined ? true : useMI;
     useDot = useMI == true ? (useDot == undefined ? true : useDot) : false;
     var entityName = entity.firstName + " ";
-    if (entity.middleInitial.length > 0) {
+    if (entity.middleInitial && entity.middleInitial.length > 0) {
       if (useMI == true) {
         entityName += entity.middleInitial + (useDot ? "." : "") + " ";
-      }      
+      }
     }
     entityName += entity.lastName;
     return entityName;
@@ -267,13 +257,17 @@ $(function() {
   function switchToIntake(entityIndex) {
     document.getElementById("intakeForm").reset();
     $("#intakeForm .picture").empty();
+
+    var sampleDataLength = sampleData.length;
     var entity = null;
     if (entityIndex < 0) { // New client
       entity = new Entity();
-      // Fill in the picture with the unknown icon
-      $("#intakeForm .picture").append($("<img src=\"img/unknown.png\">"));
-      // Fill in the name field with whatever the user had typed
-      $("#intakeForm #fullName").val($("#searchForm #searchField").val());
+      entity.index = sampleDataLength;
+      entity.picture = "unknown.png";
+      entity.fullName = $("#searchForm #searchField").val();
+      entity.sex = "male"; // hard code this for now to prevent an error on reading
+      entity.CID = "a7f8hvx3";  // this too.
+      sampleData.push(entity);
     }
     else {
       for (var i=0; i<sampleDataLength; i++) {
@@ -281,26 +275,63 @@ $(function() {
           entity = sampleData[i];
         }
       }
-      if (entity !== null) {
-        // Fill in the picture
-        $("#intakeForm .picture").append($("<img src=\"img/" + entity["picture"] + "\">"));
-        // Fill in the name field
+    }
+    if (entity !== null) {
+      // Fill in the picture
+      $("#intakeForm .picture").append($("<img src=\"img/" + entity.picture + "\">"));
+      // Fill in the name field
+      if (entity.hasOwnProperty("fullName")) { // i.e., because we just assigned it above...
+        $("#intakeForm #fullName").val(entity.fullName);
+      }
+      else {
         $("#intakeForm #fullName").val(getEntityName(entity));
-        // Fill in the SSN and CID fields
-        $("#intakeForm #readOnlySSN").val("SSN:   " + entity.SSN);
-        $("#intakeForm #readOnlyCID").val("CID:   " + entity.CID);
-        // Fill in other fields
-        for (prop in entity) {
-          elem = $("#intakeForm #"+prop);
-          if (elem !== null) {
-            if (elem.is("input")) {
-              elem.val(entity[prop]);
-            }
+      }
+      // Fill in the CID field
+      $("#intakeForm #readOnlyCID").val("CID:   " + entity.CID);
+      // Fill in other fields
+      for (prop in entity) {
+        elem = $("#intakeForm #"+prop);
+        if (elem !== null) {
+          if (elem.is("input")) {
+            elem.val(entity[prop]);
           }
         }
       }
     }
     $("#search").css("display", "none");
     $("#intake").css("display", "block");
+  }
+
+  function saveChanges() {
+    var propertyList = ["address", "city", "state", "zip", "DOB" ,"age"];
+    var propertyListLength = propertyList.length;
+
+    // Parse out name components.
+    var fullName = $("#intakeForm #fullName").val().trim();
+    var firstName = "";
+    var middleInitial = "";
+    var lastName = "";
+    var nameList = fullName.split(" ");
+    if (nameList.length == 2) {
+      firstName = nameList[0].trim();
+      lastName = nameList[1].trim();
+    }
+    else if (nameList.length == 3) {
+      firstName = nameList[0].trim();
+      middleInitial = nameList[1].substr(0,1);
+      lastName = nameList[2].trim();
+    }
+
+    // Assign the values to the entity that are in the form.
+    var index = $("#intakeForm #index").val();
+    var entity = sampleData[index];
+    // Start with the name, since that one is special.
+    entity.firstName = firstName;
+    entity.middleInitial = middleInitial;
+    entity.lastName = lastName;
+    // Now do the other simpler properties.
+    for (var i=0; i<propertyListLength; i++) {
+      entity[propertyList[i]] = $("#intakeForm #" + propertyList[i]).val();
+    }       
   }
 });
