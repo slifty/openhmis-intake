@@ -84,26 +84,12 @@ $(function() {
   function Hit(entity) {
     this.entityIndex = entity["index"];
     this.removeMe = false; // Used when comparing to already-matched records.
-    // The constructor already starts preparing the new object's members
-    // for their eventual lives as elements in the DOM. I'm not crazy
-    // about doing this at this stage, but wrapping them in <span>s now
-    // makes it easy to override member values with strings that match
-    // user input and that have been prewrapped in <span>s to show these
-    // matches.
-    // Actually the more I work with this, the more the problems of having
-    // these preformatted strings in the object become apparent. I must find
-    // a better way... later
-    this.picture = "<img src=\"img/" + entity["picture"] + "\">";
-    this.fullName = "<span>" +  getEntityName(entity) + "</span>";
-    this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
-    this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
-    this.age = "<span class='label'>age: </span><span>" + entity.age + "</span>";
-    this.CID = "<span class='label'>CID: </span><span>" + entity.CID + "</span>";
-  }
-
-  // This method is terrible. See comment imm. above re: dissatisfaction.
-  Hit.prototype.updateProperty = function(propertyName, propertyValue) {
-    this[propertyName] = "<span class='label'>" + propertyName + ": </span><span>" + propertyValue + "</span>";
+    this.picture = entity["picture"];
+    this.fullName = getEntityName(entity);
+    this.sex = entity.sex.substr(0,1).toUpperCase();
+    this.DOB = entity.DOB;
+    this.age = entity.age;
+    this.CID = entity.CID;
   }
 
   function HitFactory() {
@@ -162,7 +148,7 @@ $(function() {
         // appropriate.
         if (res.length > 3) { res[2] += "."; }
         var matchedLength = res.slice(1).join(" ").length;
-        var formattedName = "<span><span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength) + "</span>";
+        var formattedName = "<span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength);
         var hit = hitFactory.getHit(entity);
         hit["fullName"] = formattedName;
       }
@@ -176,11 +162,11 @@ $(function() {
           // We know we've matched the full first name. Find out how much
           // of the last name was matched too.
           var matchedLastNameLength = res[2].length;
-          var formattedName = "<span><span class='marked'>" + entity.firstName + "</span> ";
-          if (entity.middleInitial.length > 0) {
+          var formattedName = "<span class='marked'>" + entity.firstName + "</span> ";
+          if (entity.middleInitial && entity.middleInitial.length > 0) {
             formattedName += entity.middleInitial + ". ";
           }
-          formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
+          formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength);
           var hit = hitFactory.getHit(entity);
           hit["fullName"] = formattedName;
         }
@@ -190,11 +176,11 @@ $(function() {
           if (res !== null) {
             // We found a match on just the last name.
             var matchedLastNameLength = res[1].length;
-            var formattedName = "<span>" + entity.firstName;
-            if (entity.middleInitial.length > 0) {
+            var formattedName = entity.firstName;
+            if (entity.middleInitial && entity.middleInitial.length > 0) {
               formattedName += " " + entity.middleInitial + ". ";
             }
-            formattedName += "</span><span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
+            formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength);
             var hit = hitFactory.getHit(entity);
             hit["fullName"] = formattedName;
           }
@@ -206,9 +192,9 @@ $(function() {
       for (var j=0; j<matchingTermsLength; j++) {
         var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
-          var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
+          var formattedString = "<span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength);
           var hit = hitFactory.getHit(entity);
-          hit.updateProperty(matchingTerms[j], formattedString);
+          hit[matchingTerms[j]] = formattedString;
         }
       }
     }
@@ -230,15 +216,15 @@ $(function() {
 
   function getSummaryDiv(hit) {
     var summaryDiv = $("<div class='hit'></div>");
-    var picture = $("<div class='picture'>" + hit.picture + "</div>");
+    var picture = $("<div class='picture'><img src=\"img/" + hit.picture + "\"></div>");
     var text = $("<div class='text'></div>");
-    var fullName = $("<div class='summaryElement'>" + hit.fullName + "</div>");
-    var sex = $("<div class='summaryElement'>" + hit.sex + "</div>");
+    var fullName = $("<div class='summaryElement'><span>" + hit.fullName + "</span></div>");
+    var sex = $("<div class='summaryElement'><span>(" + hit.sex + ")</span></div>");
     var clear1 = $("<div class='clear'></div>");
-    var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
-    var age = $("<div class='summaryElement'>" + hit.age + "</div>");
+    var dob = $("<div class='summaryElement'><span class='label'>DOB: </span><span>" + hit.DOB + "</span></div>");
+    var age = $("<div class='summaryElement'><span class='label'>age: </span><span>" + hit.age + "</span></div>");
     var clear2 = $("<div class='clear'></div>");
-    var CID = $("<div class='summaryElement'>" + hit.CID + "</div>");
+    var CID = $("<div class='summaryElement'><span class='label'>CID: </span><span>" + hit.CID + "</span></div>");
     summaryDiv.append(picture);
     text.append(fullName);
     text.append(sex);
