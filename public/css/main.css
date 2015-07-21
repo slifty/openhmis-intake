@@ -5,15 +5,30 @@ body {
   background-position: center;
 }
 
-#logos {
+#logo {
   position: absolute;
-  left: 10px;
-  top: 10px;
+  left: 15px;
+  top: 15px;
+  height: 45px;
+  width: 45px;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-#logos #gaDCA {
-  width: 60px;
-  height: 60px;
+#logoTop {
+  width: 45px;
+  height: 22px;
+  background-color: #47768a;
+  color: white;
+}
+
+#logoBottom {
+  width: 45px;
+  background-color: white;
+  color: #47768a;
 }
 
 .clear {
@@ -21,8 +36,6 @@ body {
 }
 
 #search, #intake {
-  width: 450px;
-  margin: 10px auto;
   display: none;
 }
 
@@ -90,8 +103,15 @@ body {
   width: 100%;
 }
 
-#searchForm button {
+.buttonBox {
   float: right;
+}
+
+.buttonBox button {
+  float: left;
+}
+
+#searchForm button {
   margin-top: 15px;
 }
 
@@ -100,7 +120,7 @@ body {
 }
 
 #intakeForm button {
-  float: right;
+  margin-left: 5px;
   margin-top: 80px;
 }
 
@@ -131,6 +151,8 @@ body {
   border: 2px solid #ccc;
   border-radius: 10px;
   height: 600px;
+  width: 450px;
+  margin: 10px auto;
 }
 
 .container h1 {

@@ -1,9 +1,5 @@
 $(function() {
-  $("#searchForm").submit(function() {
-    switchToIntake(-1);
-    return false;
-  });
-	$("#intakeForm").submit(function() {
+  $("#intakeForm").submit(function() {
     /* This was crashing my server for some reason
 		var data = $(this).serialize();
     $.ajax("client", {
@@ -32,11 +28,17 @@ $(function() {
     $("#results").on("click", ".hit", function(e) {
       switchToIntake($(e.currentTarget).data("entity-index"));
     });
+    $("#addNewClient").click(function() {
+      switchToIntake(-1);
+    });
+    $("#backToResults").click(function() {
+      switchToSearch(true);
+    });
     switchToSearch();
   });
 
   var sampleDataLength = sampleData.length;
-  var matchingTerms = ["pathwaysId"];
+  var matchingTerms = ["CID"];
   var matchingTermsLength = matchingTerms.length;
 
   function populateResults(userString) {
@@ -103,11 +105,35 @@ $(function() {
     this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
     this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
     this.age = "<span class='label'>age: </span><span>" + entity.age + "</span>";
-    this.pathwaysId = "<span class='label'>CID: </span><span>" + entity.pathwaysId + "</span>";
+    this.CID = "<span class='label'>CID: </span><span>" + entity.CID + "</span>";
+  }
+
+  function HitFactory() {
+    this.hits = {};
+  }
+
+  HitFactory.prototype.getHit = function(entity) {
+    var hit = null;
+    var entityIndex = entity.index;
+    if (this.hits.hasOwnProperty(entityIndex)) {
+      hit = this.hits[entityIndex];
+    }
+    else {
+      hit = new Hit(entity);
+      this.hits[entityIndex] = hit;
+    }
+    return hit;
+  }
+
+  HitFactory.prototype.allTheHits = function() {
+    var hitList = [];
+    for (entityIndex in this.hits) {
+      hitList.push(this.hits[entityIndex]);
+    }
+    return hitList;
   }
 
   function search(userString) {
-    var hits = [];
     // Trim trailing dots and whitespace from the user's input.
     userString = userString.replace(/^[ .]+/, "").replace (/[ .]+$/, "");
     // Use a regex to split the string on whitespace, removing a
@@ -116,6 +142,10 @@ $(function() {
     userString = userString.split(/[.]?\s+/).join(" ");
     // Create a case-insensitive regex based on the user's entry.
     var userRe = new RegExp("^(" + userString.replace(/\s/g, ") (") + ")", "i");
+
+    // Use this empty object to store our results. The key is the entity
+    // ID. The value is the Hit instance.
+    var hitFactory = new HitFactory();
 
     for (var i=0; i<sampleDataLength; i++) {
       var entity = sampleData[i];
@@ -134,9 +164,8 @@ $(function() {
         if (res.length > 3) { res[2] += "."; }
         var matchedLength = res.slice(1).join(" ").length;
         var formattedName = "<span><span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength) + "</span>";
-        var newHit = new Hit(entity);
-        newHit["name"] = formattedName;
-        hits.push(newHit);
+        var hit = hitFactory.getHit(entity);
+        hit["name"] = formattedName;
       }
       else {
         // The user might have entered first and last names without a
@@ -153,9 +182,8 @@ $(function() {
             formattedName += entity.middleInitial + ". ";
           }
           formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
-          var newHit = new Hit(entity);
-          newHit["name"] = formattedName;
-          hits.push(newHit);
+          var hit = hitFactory.getHit(entity);
+          hit["name"] = formattedName;
         }
         else {
           // The user might have entered just a last name.
@@ -168,9 +196,8 @@ $(function() {
               formattedName += " " + entity.middleInitial + ". ";
             }
             formattedName += "</span><span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
-            var newHit = new Hit(entity);
-            newHit["name"] = formattedName;
-            hits.push(newHit);
+            var hit = hitFactory.getHit(entity);
+            hit["name"] = formattedName;
           }
         }
       }
@@ -181,14 +208,12 @@ $(function() {
         var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
         if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
           var formattedString = "<span><span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength) + "</span>";
-          var newHit = new Hit(entity);
-          newHit["name"] = "<span>" + entityDisplayName + "</span>";
-          newHit[matchingTerms[j]] = formattedString;
-          hits.push(newHit);
+          var hit = hitFactory.getHit(entity);
+          hit[matchingTerms[j]] = formattedString;
         }
       }
     }
-    return hits;
+    return hitFactory.allTheHits();
   }
 
   function getEntityName(entity, useMI, useDot) {
@@ -214,7 +239,7 @@ $(function() {
     var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
     var age = $("<div class='summaryElement'>" + hit.age + "</div>");
     var clear2 = $("<div class='clear'></div>");
-    var pathwaysId = $("<div class='summaryElement'>" + hit.pathwaysId + "</div>");
+    var CID = $("<div class='summaryElement'>" + hit.CID + "</div>");
     summaryDiv.append(picture);
     text.append(name);
     text.append(sex);
@@ -222,15 +247,18 @@ $(function() {
     text.append(dob);
     text.append(age);
     text.append(clear2);
-    text.append(pathwaysId);
+    text.append(CID);
     summaryDiv.append(text);
     summaryDiv.data("entity-index", hit.entityIndex);
     return summaryDiv;
   }
 
-  function switchToSearch() {
-    $("#searchField").val("");
-    $("#results").empty();
+  function switchToSearch(keepResults) {
+    keepResults = keepResults == undefined ? false : keepResults;
+    if (keepResults !== true) {
+      $("#searchField").val("");
+      $("#results").empty();
+    }
     $("#addNewClient").prop("disabled", true);
     $("#search").css("display", "block");
     $("#intake").css("display", "none");
@@ -258,6 +286,9 @@ $(function() {
         $("#intakeForm .picture").append($("<img src=\"img/" + entity["picture"] + "\">"));
         // Fill in the name field
         $("#intakeForm #fullName").val(getEntityName(entity));
+        // Fill in the SSN and CID fields
+        $("#intakeForm #readOnlySSN").val("SSN:   " + entity.SSN);
+        $("#intakeForm #readOnlyCID").val("CID:   " + entity.CID);
         // Fill in other fields
         for (prop in entity) {
           elem = $("#intakeForm #"+prop);
@@ -272,4 +303,4 @@ $(function() {
     $("#search").css("display", "none");
     $("#intake").css("display", "block");
   }
-})
+});
