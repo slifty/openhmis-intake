@@ -91,6 +91,7 @@ $(function() {
     // user input and that have been prewrapped in <span>s to show these
     // matches.
     this.picture = "<img src=\"img/" + entity["picture"] + "\">";
+    this.fullName = "<span>" +  getEntityName(entity) + "</span>";
     this.sex = "<span>(" + entity.sex.substr(0,1).toUpperCase() + ")</span>";
     this.DOB = "<span class='label'>DOB: </span><span>" + entity.DOB + "</span>";
     this.age = "<span class='label'>age: </span><span>" + entity.age + "</span>";
@@ -155,7 +156,7 @@ $(function() {
         var matchedLength = res.slice(1).join(" ").length;
         var formattedName = "<span><span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength) + "</span>";
         var hit = hitFactory.getHit(entity);
-        hit["name"] = formattedName;
+        hit["fullName"] = formattedName;
       }
       else {
         // The user might have entered first and last names without a
@@ -173,7 +174,7 @@ $(function() {
           }
           formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
           var hit = hitFactory.getHit(entity);
-          hit["name"] = formattedName;
+          hit["fullName"] = formattedName;
         }
         else {
           // The user might have entered just a last name.
@@ -187,7 +188,7 @@ $(function() {
             }
             formattedName += "</span><span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength) + "</span>";
             var hit = hitFactory.getHit(entity);
-            hit["name"] = formattedName;
+            hit["fullName"] = formattedName;
           }
         }
       }
@@ -223,7 +224,7 @@ $(function() {
     var summaryDiv = $("<div class='hit'></div>");
     var picture = $("<div class='picture'>" + hit.picture + "</div>");
     var text = $("<div class='text'></div>");
-    var name = $("<div class='summaryElement'>" + hit.name + "</div>");
+    var fullName = $("<div class='summaryElement'>" + hit.fullName + "</div>");
     var sex = $("<div class='summaryElement'>" + hit.sex + "</div>");
     var clear1 = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'>" + hit.DOB + "</div>");
@@ -231,7 +232,7 @@ $(function() {
     var clear2 = $("<div class='clear'></div>");
     var CID = $("<div class='summaryElement'>" + hit.CID + "</div>");
     summaryDiv.append(picture);
-    text.append(name);
+    text.append(fullName);
     text.append(sex);
     text.append(clear1);
     text.append(dob);
