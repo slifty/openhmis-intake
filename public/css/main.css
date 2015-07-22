@@ -8,27 +8,12 @@ body {
 #logo {
   position: absolute;
   left: 15px;
-  top: 15px;
-  height: 45px;
-  width: 45px;
-  font-family: "Helvetica Neue", Helvetica, Arial;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+  top: 22px;
 }
 
-#logoTop {
-  width: 45px;
-  height: 22px;
-  background-color: #47768a;
-  color: white;
-}
-
-#logoBottom {
-  width: 45px;
-  background-color: white;
-  color: #47768a;
+#logo img {
+  width: 80px;
+  height: 23px;
 }
 
 .clear {
