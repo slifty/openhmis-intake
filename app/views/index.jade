@@ -23,6 +23,8 @@ html(lang="en")
         form#searchForm
           div.form-group
             input#searchField.form-control(name='searchField', type='text', placeholder='name or CID')
+            input#firstName(name='firstName', type='hidden')
+            input#lastName(name='lastName', type='hidden')
           div#results
           div.buttonBox
             button#addNewClient(type='button') Add New Client
@@ -32,7 +34,8 @@ html(lang="en")
           div
             div.picture
             div#intakeSummary
-              input.pct100#fullName(name='fullName', type='text', placeholder='full name')
+              input.pct50#firstName(name='firstName', type='text', placeholder='first name')
+              input.pct50#lastName(name='lastName', type='text', placeholder='last name')
               input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
               input.pct50#readOnlyCID(name='CID', type='text', placeholder='CID', readonly)
           div.label.pct100 street address

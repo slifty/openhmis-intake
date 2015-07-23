@@ -30,9 +30,6 @@ $(function() {
     switchToSearch();
   });
 
-  var matchingTerms = ["CID"];
-  var matchingTermsLength = matchingTerms.length;
-
   function populateResults(userString) {
     var newHits = search(userString);
     // Create an array to hold indices of all the latest hits. If an
@@ -85,16 +82,19 @@ $(function() {
   }
 
   function Hit(entity) {
-    this.entityIndex = entity["index"];
+    this.entityIndex = entity.index;
     this.removeMe = false; // Used when comparing to already-matched records.
-    this.picture = entity["picture"];
-    this.fullName = getEntityName(entity);
+    this.picture = entity.picture;
+    this.firstName = entity.firstName;
+    this.lastName = entity.lastName;
     this.sex = entity.sex.substr(0,1).toUpperCase();
     this.DOB = entity.DOB;
     this.age = entity.age;
     this.CID = entity.CID;
   }
 
+  /* Hit factory holds a dictionary of hits (with entity indices as
+     keys) that match user input. */
   function HitFactory() {
     this.hits = {};
   }
@@ -121,107 +121,77 @@ $(function() {
   }
 
   function search(userString) {
-    // Trim trailing dots and whitespace from the user's input.
-    userString = userString.replace(/^[ .]+/, "").replace (/[ .]+$/, "");
-    // Use a regex to split the string on whitespace, removing a
-    // middle initial dot (if present) in the process, and rejoin with
-    // a single space.
-    userString = userString.split(/[.]?\s+/).join(" ");
-    // Create a case-insensitive regex based on the user's entry.
-    var userRe = new RegExp("^(" + userString.replace(/\s/g, ") (") + ")", "i");
+    // First Trim any non-alphanumerics from the ends of the user's input.
+    userString = userString.replace(/^[^\w]+/i, "").replace(/[^\w]+$/i, "");
 
-    // Use this empty object to store our results. The key is the entity
-    // ID. The value is the Hit instance.
+    // Then split the user's string on non-alphanumeric sequences. This
+    // eliminates a dot after a middle initial, a comma if name is
+    // entered as "Doe, John" (or as "Doe , John"), etc. 
+    userSubstrings = userString.split(/[^\w]+/);
+
+    // Store the first and last user substrings into some hidden form
+    // fields. They might be used later if a new client is created.
+    $("#searchForm #firstName").val(userSubstrings[0]);
+    $("#searchForm #lastName").val(userSubstrings.length > 1 ? userSubstrings[userSubstrings.length - 1] : "");
+    
+    // The hit factory will generate new a Hit object or return an
+    // already instantiated one with the requested index.
     var hitFactory = new HitFactory();
 
     var sampleDataLength = sampleData.length;
+    var entity = null;
+    var result = null;
+    var matchLength = 0;
+    var hit = null;
+
+    // Turn the user's input into a list of regexes that will try to match against our matching terms.
+    var userRegexes = $.map(userSubstrings, function(userSubstring) { return new RegExp("^" + userSubstring, "i"); });
+    // This is the list of "matching terms" we will try to match to user input.
+    var matchingTerms = ["firstName", "lastName"];
+
     for (var i=0; i<sampleDataLength; i++) {
-      var entity = sampleData[i];
+      entity = sampleData[i];
+      // Make a copies of "userRegexes" and "matchingTerms" that we can
+      // alter as we search.
+      var userRegexesCopy = userRegexes.slice(0);
+      var matchingTermsCopy = matchingTerms.slice(0);
+      while (userRegexesCopy.length > 0) {
+        var userRegex = userRegexesCopy.shift();
 
-      // Try to find a match on the entity's full name including
-      // middle initial. This will also find matches if the user
-      // has entered only a first name or a partial first name.
-      var entityFullName = getEntityName(entity, true, false); // with MI, without dot
-      var entityDisplayName =  getEntityName(entity, true, true); // with MI, with dot
-
-      var res = entityFullName.match(userRe);
-      if (res !== null) {
-        // We found a match on at least the start of the first name.
-        // Kludgily insert that stupid dot back into our results if
-        // appropriate.
-        if (res.length > 3) { res[2] += "."; }
-        var matchedLength = res.slice(1).join(" ").length;
-        var formattedName = "<span class='marked'>" + entityDisplayName.substr(0, matchedLength) + "</span>" + entityDisplayName.substr(matchedLength);
-        var hit = hitFactory.getHit(entity);
-        hit["fullName"] = formattedName;
-      }
-      else {
-        // The user might have entered first and last names without a
-        // middle initial. Try to find a match.
-        entityFirstAndLast = getEntityName(entity, false); // without MI
-        res = entityFirstAndLast.match(userRe);
-        if (res !== null) {
-          // We found a match on the full name without a middle initial.
-          // We know we've matched the full first name. Find out how much
-          // of the last name was matched too.
-          var matchedLastNameLength = res[2].length;
-          var formattedName = "<span class='marked'>" + entity.firstName + "</span> ";
-          if (entity.middleInitial && entity.middleInitial.length > 0) {
-            formattedName += entity.middleInitial + ". ";
-          }
-          formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength);
-          var hit = hitFactory.getHit(entity);
-          hit["fullName"] = formattedName;
-        }
-        else {
-          // The user might have entered just a last name.
-          res = entity.lastName.match(userRe);
-          if (res !== null) {
-            // We found a match on just the last name.
-            var matchedLastNameLength = res[1].length;
-            var formattedName = entity.firstName;
-            if (entity.middleInitial && entity.middleInitial.length > 0) {
-              formattedName += " " + entity.middleInitial + ". ";
+        var matchFound = false;
+        for (var j=0; j < matchingTermsCopy.length; j++) {
+          result = entity[matchingTermsCopy[j]].match(userRegex);
+          if (result !== null) {
+            // We found a match. Figure out how long it is.
+            matchLength = result[0].length;
+            // If the match is perfect OR if there are no more user-entered search terms after this one, we may mark it as a hit.
+            if (matchLength == entity[matchingTermsCopy[j]].length || userRegexesCopy.length == 0) {
+              hit = hitFactory.getHit(entity);
+              hit[matchingTermsCopy[j]] = "<span class='marked'>" + entity[matchingTermsCopy[j]].substr(0, matchLength) + "</span>" + entity[matchingTermsCopy[j]].substr(matchLength);
+              matchingTermsCopy.splice(j, 1);
+              matchFound = true;
             }
-            formattedName += "<span class='marked'>" + entity.lastName.substr(0,matchedLastNameLength) + "</span>" + entity.lastName.substr(matchedLastNameLength);
-            var hit = hitFactory.getHit(entity);
-            hit["fullName"] = formattedName;
           }
         }
-      }
-      // Now that we've checked for matching names, check for our other
-      // matching criteria.
-      var userStringLength = userString.length;
-      for (var j=0; j<matchingTermsLength; j++) {
-        var dataSubstring = sampleData[i][matchingTerms[j]].substr(0, userStringLength);
-        if (dataSubstring.toLowerCase() == userString.toLowerCase()) {
-          var formattedString = "<span class='marked'>" + dataSubstring + "</span>" + sampleData[i][matchingTerms[j]].substr(userStringLength);
-          var hit = hitFactory.getHit(entity);
-          hit[matchingTerms[j]] = formattedString;
+        if (matchFound == false) {
+          // To be here, we either a) found no match(es) or b) found a
+          // partial match (or matches), but other search terms existed
+          // to the right of this one, so it doesn't count (e.g., "Da"
+          // should match "David Smith" but "Da S" should not).
+          // Therefore, move on to the next entity.
+          if (entity.firstName == "Blanchard") console.log("hi");
+          break;
         }
       }
     }
     return hitFactory.allTheHits();
   }
 
-  function getEntityName(entity, useMI, useDot) {
-    useMI = useMI == undefined ? true : useMI;
-    useDot = useMI == true ? (useDot == undefined ? true : useDot) : false;
-    var entityName = entity.firstName + " ";
-    if (entity.middleInitial && entity.middleInitial.length > 0) {
-      if (useMI == true) {
-        entityName += entity.middleInitial + (useDot ? "." : "") + " ";
-      }
-    }
-    entityName += entity.lastName;
-    return entityName;
-  }
-
   function getSummaryDiv(hit) {
     var summaryDiv = $("<div class='hit'></div>");
     var picture = $("<div class='picture'><img src=\"img/" + hit.picture + "\"></div>");
     var text = $("<div class='text'></div>");
-    var fullName = $("<div class='summaryElement'><span>" + hit.fullName + "</span></div>");
+    var fullName = $("<div class='summaryElement'><span>" + hit.firstName + " " + hit.lastName + "</span></div>");
     var sex = $("<div class='summaryElement'><span>(" + hit.sex + ")</span></div>");
     var clear1 = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'><span class='label'>DOB: </span><span>" + hit.DOB + "</span></div>");
@@ -262,7 +232,8 @@ $(function() {
       entity = new Entity();
       entity.index = sampleDataLength;
       entity.picture = "unknown.png";
-      entity.fullName = $("#searchForm #searchField").val();
+      entity.firstName = $("#searchForm #firstName").val();
+      entity.lastName = $("#searchForm #lastName").val();
       entity.sex = "female"; // hard code this for now to prevent an error on reading
       entity.CID = "a7f8hvx3";  // this too.
       sampleData.push(entity);
@@ -274,25 +245,16 @@ $(function() {
         }
       }
     }
-    if (entity !== null) {
-      // Fill in the picture
-      $("#intakeForm .picture").append($("<img src=\"img/" + entity.picture + "\">"));
-      // Fill in the name field
-      if (entity.hasOwnProperty("fullName")) { // i.e., because we just assigned it above...
-        $("#intakeForm #fullName").val(entity.fullName);
-      }
-      else {
-        $("#intakeForm #fullName").val(getEntityName(entity));
-      }
-      // Fill in the CID field
-      $("#intakeForm #readOnlyCID").val("CID:   " + entity.CID);
-      // Fill in other fields
-      for (prop in entity) {
-        elem = $("#intakeForm #"+prop);
-        if (elem !== null) {
-          if (elem.is("input")) {
-            elem.val(entity[prop]);
-          }
+
+    // Fill in the picture
+    $("#intakeForm .picture").append($("<img src=\"img/" + entity.picture + "\">"));
+
+    // Fill in the text fields
+    for (prop in entity) {
+      elem = $("#intakeForm #"+prop);
+      if (elem !== null) {
+        if (elem.is("input")) {
+          elem.val(entity[prop]);
         }
       }
     }
@@ -301,33 +263,12 @@ $(function() {
   }
 
   function saveChanges() {
-    var propertyList = ["address", "city", "state", "zip", "DOB" ,"age"];
+    var propertyList = ["firstName", "lastName", "address", "city", "state", "zip", "DOB" ,"age"];
     var propertyListLength = propertyList.length;
-
-    // Parse out name components.
-    var fullName = $("#intakeForm #fullName").val().trim();
-    var firstName = "";
-    var middleInitial = "";
-    var lastName = "";
-    var nameList = fullName.split(" ");
-    if (nameList.length == 2) {
-      firstName = nameList[0].trim();
-      lastName = nameList[1].trim();
-    }
-    else if (nameList.length == 3) {
-      firstName = nameList[0].trim();
-      middleInitial = nameList[1].substr(0,1);
-      lastName = nameList[2].trim();
-    }
 
     // Assign the values to the entity that are in the form.
     var index = $("#intakeForm #index").val();
     var entity = sampleData[index];
-    // Start with the name, since that one is special.
-    entity.firstName = firstName;
-    entity.middleInitial = middleInitial;
-    entity.lastName = lastName;
-    // Now do the other simpler properties.
     for (var i=0; i<propertyListLength; i++) {
       entity[propertyList[i]] = $("#intakeForm #" + propertyList[i]).val();
     }       
