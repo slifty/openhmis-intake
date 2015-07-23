@@ -112,6 +112,13 @@ $(function() {
     return hit;
   }
 
+  HitFactory.prototype.killHit = function(entity) {
+    var entityIndex = entity.index;
+    if (this.hits.hasOwnProperty(entityIndex)) {
+      delete this.hits[entityIndex];
+    }
+  }
+
   HitFactory.prototype.allTheHits = function() {
     var hitList = [];
     for (entityIndex in this.hits) {
@@ -129,10 +136,10 @@ $(function() {
     // entered as "Doe, John" (or as "Doe , John"), etc. 
     userSubstrings = userString.split(/[^\w]+/);
 
-    // Store the first and last user substrings into some hidden form
+    // Store the first and second user substrings into some hidden form
     // fields. They might be used later if a new client is created.
     $("#searchForm #firstName").val(userSubstrings[0]);
-    $("#searchForm #lastName").val(userSubstrings.length > 1 ? userSubstrings[userSubstrings.length - 1] : "");
+    $("#searchForm #lastName").val(userSubstrings.length > 1 ? userSubstrings[1] : "");
     
     // The hit factory will generate new a Hit object or return an
     // already instantiated one with the requested index.
@@ -147,7 +154,7 @@ $(function() {
     // Turn the user's input into a list of regexes that will try to match against our matching terms.
     var userRegexes = $.map(userSubstrings, function(userSubstring) { return new RegExp("^" + userSubstring, "i"); });
     // This is the list of "matching terms" we will try to match to user input.
-    var matchingTerms = ["firstName", "lastName"];
+    var matchingTerms = ["firstName", "lastName", "CID"];
 
     for (var i=0; i<sampleDataLength; i++) {
       entity = sampleData[i];
@@ -157,29 +164,36 @@ $(function() {
       var matchingTermsCopy = matchingTerms.slice(0);
       while (userRegexesCopy.length > 0) {
         var userRegex = userRegexesCopy.shift();
-
         var matchFound = false;
-        for (var j=0; j < matchingTermsCopy.length; j++) {
+        for (var j=0; j < matchingTermsCopy.length; ) {
           result = entity[matchingTermsCopy[j]].match(userRegex);
           if (result !== null) {
             // We found a match. Figure out how long it is.
             matchLength = result[0].length;
-            // If the match is perfect OR if there are no more user-entered search terms after this one, we may mark it as a hit.
+            // If the match is perfect OR if there are no more
+            // user-entered search terms after this one, we may mark it
+            // as a hit.
             if (matchLength == entity[matchingTermsCopy[j]].length || userRegexesCopy.length == 0) {
               hit = hitFactory.getHit(entity);
               hit[matchingTermsCopy[j]] = "<span class='marked'>" + entity[matchingTermsCopy[j]].substr(0, matchLength) + "</span>" + entity[matchingTermsCopy[j]].substr(matchLength);
-              matchingTermsCopy.splice(j, 1);
               matchFound = true;
+
+              // Remove this matching term from consideration when
+              // processing other user search terms by splicing it out
+              // of our copy of matching terms.
+              matchingTermsCopy.splice(j, 1);
+              // Since "matchingTermsCopy" is now shorter by 1, continue
+              // the loop without incrementing the counter.
+              continue;
             }
           }
+          j++;
         }
         if (matchFound == false) {
-          // To be here, we either a) found no match(es) or b) found a
-          // partial match (or matches), but other search terms existed
-          // to the right of this one, so it doesn't count (e.g., "Da"
-          // should match "David Smith" but "Da S" should not).
-          // Therefore, move on to the next entity.
-          if (entity.firstName == "Blanchard") console.log("hi");
+          // If any part of the user-entered search terms failed to find
+          // a match, previous matches don't matter. The entity should
+          // not appear in the list of hits.
+          hitFactory.killHit(entity);
           break;
         }
       }
