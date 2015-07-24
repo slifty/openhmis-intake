@@ -180,6 +180,10 @@ body {
   cursor: pointer;
 }
 
+.hit * {
+  cursor: pointer;
+}
+
 .hit .picture, .hit .text {
   height: 75px;
   float: left;
