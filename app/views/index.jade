@@ -7,11 +7,14 @@ html(lang="en")
 
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans', type='text/css')
     link(rel='stylesheet', type='text/css', href='css/lib/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='css/lib/pikaday.css')
     link(rel='stylesheet', type='text/css', href='css/main.css')
 
     script(type='text/javascript', src='js/lib/jquery.min.js')
     script(type='text/javascript', src='js/lib/bootstrap.min.js')
-    script(type='text/javascript', src='js/lib/sampleData.js')
+    script(type='text/javascript', src='js/lib/moment.js')
+    script(type='text/javascript', src='js/lib/pikaday.js')
+    script(type='text/javascript', src='js/lib/sampleData2.js')
     script(type='text/javascript', src='js/index.js')
 
   body
@@ -22,7 +25,7 @@ html(lang="en")
         h1 Client Search
         form#searchForm
           div.form-group
-            input#searchField.form-control(name='searchField', type='text', placeholder='name or CID')
+            input#searchField.form-control(name='searchField', type='text', placeholder='search by first or last name')
             input#firstName(name='firstName', type='hidden')
             input#lastName(name='lastName', type='hidden')
           div#results
@@ -32,40 +35,29 @@ html(lang="en")
         h1 Client Intake
         form#intakeForm
           div
-            div.picture
+            div#picture
             div#intakeSummary
               input.pct50#firstName(name='firstName', type='text', placeholder='first name')
               input.pct50#lastName(name='lastName', type='text', placeholder='last name')
-              input.pct50#SSN(name='SSN', type='text', placeholder='SSN')
-              input.pct50#readOnlyCID(name='CID', type='text', placeholder='CID', readonly)
-          div.label.pct100 street address
-          input.pct100#address(name='address', type='text')
-          div.label.pct33 city
-          div.label.pct33 state
-          div.label.pct34 zip
-          input.pct33#city(name='city', type='text')
-          input.pct33#state(name='state', type='text')
-          input.pct34#zip(name='zip', type='text')
-          div.label.pct67 date of birth
-          div.label.pct33 age
-          input.pct67#DOB(name='DOB', type='text', placeholder='date of birth')
-          input.pct33#age(name='age', type='text', placeholder='age')
+              div.pct67
+                div.label DOB:
+                div#DOB
+              div.pct33#datepicker
+                img(src='img/Farm-Fresh_calendar_view_month.png')
+          div.label.pct100 SSN
+          input.pct100#SSN(name='SSN', type='text', placeholder='SSN')
           div#selectBoxes
             .selectBox.pct33
               select#sex(name='sex')
-                option(value='') sex
+                option(value='') gender
                 option(value='M') M
                 option(value='F') F
-            .selectBox.pct67
-              select#housingStatus(name='housingStatus')
-                option(value='') housing status
-                option(value='homeless') homeless
-                option(value='homeless-only-under-other-federal-statutes') homeless only under other federal statutes
-                option(value='at-imminent-risk-of-losing-housing') at imminent risk of losing housing
-                option(value='fleeing-domestic-violence') fleeing domestic violence
-                option(value='at-risk-of-homelessness') at risk of homelessness
-                option(value='stably-housed') stably housed
-            .selectBox.pct50
+            .selectBox.pct33
+              select#ethnicity(name='ethnicity')
+                option(value='') ethnicity
+                option(value='hispanic') hispanic
+                option(value='non-hispanic') non-hispanic
+            .selectBox.pct33
               select#race(name='race')
                 option(value='') race
                 option(value='asian') Asian
@@ -74,21 +66,7 @@ html(lang="en")
                 option(value='white') White
                 option(value='pacific islander') Pacific Islander
                 option(value='other') Other
-            .selectBox.pct50
-              select#ethnicity(name='ethnicity')
-                option(value='') ethnicity
-                option(value='hispanic') hispanic
-                option(value='non-hispanic') non-hispanic
-          div.label.pct33 disabling condition?
-          div.label.pct33 chronically homeless?
-          div.label.pct34 veteran?
-          div.checkboxBox.pct33
-            input(name='disabling-condition' type='checkbox')
-          div.checkboxBox.pct33
-            input(name='chronically-homeless' type='checkbox')
-          div.checkboxBox.pct34
-            input(name='veteran' type='checkbox')
-          input.pct100#index(name='index', type='hidden')
+          input#entityIndex(name='entityIndex', type='hidden')
           div.buttonBox
             button#backToResults(type='button') Back to Results
             button#saveChanges(type='button') Save Changes

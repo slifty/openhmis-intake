@@ -28,11 +28,11 @@ body {
   height: 450px;
 }
 
-#intakeForm .picture {
+#intakeForm #picture {
   float: left;
 }
 
-#intakeForm .picture img {
+#intakeForm #picture img {
   width: 75px;
   height: 76px;
 }
@@ -41,13 +41,30 @@ body {
   margin-left: 75px;
 }
 
-#intakeForm #fullName, #intakeForm #SSN, #intakeForm #pathwaysId {
-  overflow: hidden;
+#intakeForm #DOB {
+  margin-top: 6px;
+  padding: .2em .6em .3em 0em;
+  display: inline-block;
+}
+
+#intakeForm #DOB {
+  margin-top: 6px;
+  padding: .2em .6em .3em 0em;
+  display: inline-block;
+}
+
+#intakeForm #datepicker {
+  padding-right: .6em;
+  text-align: right;
+}
+
+#intakeForm img {
+  width: 24px;
+  height: 24px;
 }
 
 #intakeForm .label {
   color: black;
-  display: inline-block;
   text-align: left;
   font-style: italic;
   margin-top: 10px;
@@ -60,7 +77,6 @@ body {
 
 #intakeForm input[type=checkbox] {
   padding: 0px;
-  display: inline-block;
 }
 
 #intakeForm #selectBoxes {
@@ -70,7 +86,6 @@ body {
 #intakeForm .selectBox {
   height: 25px;
   border: none;
-  display: inline-block;
   margin-top: 3px;
   padding-top: 5px;
   text-align: center;
@@ -80,7 +95,6 @@ body {
   height: 0px;
   padding-left: 0.6em;
   margin: 0px;
-  display: inline-block;
   text-align: left;
 }
 
@@ -111,29 +125,30 @@ body {
 
 .pct33 {
   width: 33%;
+  display: inline-block;
 }
-
 .pct34 {
   width: 34%;
+  display: inline-block;
 }
-
 .pct50 {
   width: 50%;
+  display: inline-block;
 }
-
 .pct67 {
   width: 67%;
+  display: inline-block;
 }
-
 .pct100 {
   width: 100%;
+  display: inline-block;
 }
 
 .container {
   position: relative;
   background: #fff;
   padding: 15px;
-  border: 2px solid #ccc;
+  border: 2px solid #333;
   border-radius: 10px;
   height: 600px;
   width: 450px;

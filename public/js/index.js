@@ -2,6 +2,14 @@ $(function() {
   $(document).ready(function() {
     // minimum search length needed to start looking for matches.
     var minSearchLength = 1;
+    var rightNow = moment();  // Used for calculating ages
+    var thisYear = rightNow.format('YYYY');
+    var picker = new Pikaday({
+      field: $('#datepicker')[0],
+      yearRange: [1900, thisYear],
+      maxDate: rightNow.toDate(),
+      onSelect: assignDOB
+    });
 
     // event handlers
     $("#searchField").keyup(function() {
@@ -88,9 +96,16 @@ $(function() {
     this.firstName = entity.firstName;
     this.lastName = entity.lastName;
     this.sex = entity.sex.substr(0,1).toUpperCase();
-    this.DOB = entity.DOB;
-    this.age = entity.age;
-    this.CID = entity.CID;
+    this.DOB = getFormattedDOB(entity.DOB);
+    this.age = getYearsOld(entity.DOB);
+  }
+
+  function getFormattedDOB(date) {
+    return moment(date).format('DD MMM YYYY');
+  }
+
+  function getYearsOld(date) {
+    return moment().diff(date, 'years');
   }
 
   /* Hit factory holds a dictionary of hits (with entity indices as
@@ -154,7 +169,7 @@ $(function() {
     // Turn the user's input into a list of regexes that will try to match against our matching terms.
     var userRegexes = $.map(userSubstrings, function(userSubstring) { return new RegExp("^" + userSubstring, "i"); });
     // This is the list of "matching terms" we will try to match to user input.
-    var matchingTerms = ["firstName", "lastName", "CID"];
+    var matchingTerms = ["firstName", "lastName"];
 
     for (var i=0; i<sampleDataLength; i++) {
       entity = sampleData[i];
@@ -207,19 +222,15 @@ $(function() {
     var text = $("<div class='text'></div>");
     var fullName = $("<div class='summaryElement'><span>" + hit.firstName + " " + hit.lastName + "</span></div>");
     var sex = $("<div class='summaryElement'><span>(" + hit.sex + ")</span></div>");
-    var clear1 = $("<div class='clear'></div>");
+    var clear = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'><span class='label'>DOB: </span><span>" + hit.DOB + "</span></div>");
     var age = $("<div class='summaryElement'><span class='label'>age: </span><span>" + hit.age + "</span></div>");
-    var clear2 = $("<div class='clear'></div>");
-    var CID = $("<div class='summaryElement'><span class='label'>CID: </span><span>" + hit.CID + "</span></div>");
     summaryDiv.append(picture);
     text.append(fullName);
     text.append(sex);
-    text.append(clear1);
+    text.append(clear);
     text.append(dob);
     text.append(age);
-    text.append(clear2);
-    text.append(CID);
     summaryDiv.append(text);
     summaryDiv.data("entity-index", hit.entityIndex);
     return summaryDiv;
@@ -238,7 +249,7 @@ $(function() {
 
   function switchToIntake(entityIndex) {
     document.getElementById("intakeForm").reset();
-    $("#intakeForm .picture").empty();
+    $("#intakeForm #picture").empty();
 
     var sampleDataLength = sampleData.length;
     var entity = null;
@@ -248,8 +259,8 @@ $(function() {
       entity.picture = "unknown.png";
       entity.firstName = $("#searchForm #firstName").val();
       entity.lastName = $("#searchForm #lastName").val();
+      entity.DOB = "";
       entity.sex = "female"; // hard code this for now to prevent an error on reading
-      entity.CID = "a7f8hvx3";  // this too.
       sampleData.push(entity);
     }
     else {
@@ -260,10 +271,16 @@ $(function() {
       }
     }
 
-    // Fill in the picture
-    $("#intakeForm .picture").append($("<img src=\"img/" + entity.picture + "\">"));
+    // Put the entity index into a hidden field. This gets used later by
+    // various handlers.
+    $("#intakeForm #entityIndex").val(entity.index);
 
-    // Fill in the text fields
+    // Fill in the picture
+    $("#intakeForm #picture").append($("<img src=\"img/" + entity.picture + "\">"));
+    // Fill in the readonly DOB and age
+    refreshIntakeFormDOB(entity.DOB);
+
+    // Fill in the remainign text fields
     for (prop in entity) {
       elem = $("#intakeForm #"+prop);
       if (elem !== null) {
@@ -276,13 +293,32 @@ $(function() {
     $("#intake").css("display", "block");
   }
 
+  function assignDOB() {
+    var entityIndex = $("#intakeForm #entityIndex").val();
+    var entity = sampleData[entityIndex];
+    var DOB = this.getMoment().format('YYYY-MM-DD');
+    entity.DOB = DOB;
+    refreshIntakeFormDOB(DOB);
+  }
+
+  function refreshIntakeFormDOB(DOB) {
+    if (DOB) {
+      $("#intakeForm #DOB").html(getFormattedDOB(DOB) + "&nbsp;&nbsp(age "+ getYearsOld(DOB) + ")");    
+    }
+    else {
+      $("#intakeForm #DOB").html("&nbsp;");
+    }
+  }
+
   function saveChanges() {
-    var propertyList = ["firstName", "lastName", "address", "city", "state", "zip", "DOB" ,"age"];
+    var propertyList = ["firstName", "lastName", "SSN"];
     var propertyListLength = propertyList.length;
 
-    // Assign the values to the entity that are in the form.
-    var index = $("#intakeForm #index").val();
-    var entity = sampleData[index];
+    // Assign the values to the entity that have been entered in input
+    // boxes. Other values (e.g., "DOB") have already been assigned to
+    // the entity objet.
+    var entityIndex = $("#intakeForm #entityIndex").val();
+    var entity = sampleData[entityIndex];
     for (var i=0; i<propertyListLength; i++) {
       entity[propertyList[i]] = $("#intakeForm #" + propertyList[i]).val();
     }       
