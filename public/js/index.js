@@ -34,6 +34,7 @@ $(function() {
       else if (userString.length == 0) {
         $("#searchForm #results").empty();
         $("#searchForm #warningMessage").css("display", "none");
+        $("#searchForm #addNewClient").prop("disabled", true);
       }
     });
     $("#searchForm #results").on("click", ".hit", function(e) {
@@ -247,8 +248,8 @@ $(function() {
       $("#searchForm #searchField").val("");
       $("#searchForm #results").empty();
       $("#searchForm #warningMessage").css("display", "none");
+      $("#searchForm #addNewClient").prop("disabled", true);
     }
-    $("#searchForm #addNewClient").prop("disabled", true);
     $("#search").css("display", "block");
     $("#intake").css("display", "none");
   }
