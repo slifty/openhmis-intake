@@ -30,6 +30,7 @@ html(lang="en")
             input#lastName(name='lastName', type='hidden')
           div#results
           div.buttonBox
+            div#warningMessage If client not present in results:
             button#addNewClient(type='button') Add New Client
       div#intake
         h1 Client Intake
@@ -48,24 +49,24 @@ html(lang="en")
           input.pct100#SSN(name='SSN', type='text', placeholder='SSN')
           div#selectBoxes
             .selectBox.pct33
-              select#sex(name='sex')
-                option(value='') gender
-                option(value='M') M
-                option(value='F') F
+              select#gender(name='gender')
+                option(value='' disabled selected) gender
+                option(value='male') male
+                option(value='female') female
             .selectBox.pct33
               select#ethnicity(name='ethnicity')
-                option(value='') ethnicity
-                option(value='hispanic') hispanic
-                option(value='non-hispanic') non-hispanic
+                option(value='' disabled selected) ethnicity
+                option(value='hispanic') Hispanic
+                option(value='non-hispanic') non-Hispanic
             .selectBox.pct33
               select#race(name='race')
-                option(value='') race
-                option(value='asian') Asian
-                option(value='black-african-american') Black/African American
-                option(value='american-indian-alaskan') American Indian/Alaskan
-                option(value='white') White
-                option(value='pacific islander') Pacific Islander
-                option(value='other') Other
+                option(value='' disabled selected) race
+                option(value='Asian') Asian
+                option(value='Black/African American') Black/African American
+                option(value='American Indian/Alaskan') American Indian/Alaskan
+                option(value='White') White
+                option(value='Pacific Islander') Pacific Islander
+                option(value='other') other
           input#entityIndex(name='entityIndex', type='hidden')
           div.buttonBox
             button#backToResults(type='button') Back to Results
