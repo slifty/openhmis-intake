@@ -21,19 +21,19 @@ $(function() {
           // We've found some results, but we may still have to add a
           // new client (maybe a person with the same name as an
           // existing client). The "add new client" button will be
-          // activated, but add a warning too.
-          $("#searchForm #warningMessage").css("display", "block");
+          // activated, but with a caveat.
+          $("#addNewClient").text(caveatText);
         }
         else {
-          $("#searchForm #warningMessage").css("display", "none");
-          // No need for the warning.
+          // No need for the caveat.
+          $("#addNewClient").text(noCaveatText);
         }
         // If we're over the minimum length, we may add a new client.
         $("#searchForm #addNewClient").prop("disabled", false);
       }
       else if (userString.length == 0) {
         $("#searchForm #results").empty();
-        $("#searchForm #warningMessage").css("display", "none");
+        $("#addNewClient").text(noCaveatText);
         $("#searchForm #addNewClient").prop("disabled", true);
       }
     });
@@ -51,8 +51,11 @@ $(function() {
       switchToSearch(false);
     });
 
-    switchToSearch();
+    switchToSearch(false);
   });
+
+  var caveatText = "None Of The Above -- Add New Client";
+  var noCaveatText = "Add New Client";
 
   function populateResults(userString) {
     var newHits = search(userString);
@@ -243,11 +246,10 @@ $(function() {
   }
 
   function switchToSearch(keepResults) {
-    keepResults = keepResults == undefined ? false : keepResults;
-    if (keepResults !== true) {
+    if (keepResults == false) {
       $("#searchForm #searchField").val("");
       $("#searchForm #results").empty();
-      $("#searchForm #warningMessage").css("display", "none");
+      $("#addNewClient").text(noCaveatText);
       $("#searchForm #addNewClient").prop("disabled", true);
     }
     $("#search").css("display", "block");

@@ -98,6 +98,7 @@ body {
   float: left;
 }
 
+/*
 #searchForm #warningMessage {
   float: left;
   margin-top: 17px;
@@ -106,8 +107,9 @@ body {
   font-style: italic;
   display: none;
 }
-
-#searchForm button {
+*/
+#searchForm #addNewClient {
+  width: 300px;
   margin-top: 15px;
 }
 
@@ -177,10 +179,6 @@ body {
   height: 77px;
   color: white;
   clear: both;
-  cursor: pointer;
-}
-
-.hit * {
   cursor: pointer;
 }
 
