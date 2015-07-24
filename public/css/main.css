@@ -28,6 +28,13 @@ body {
   height: 450px;
 }
 
+
+
+#intakeForm #top #topLabels {
+  margin-left: 75px;
+  margin-top: -15px;
+}
+
 #intakeForm #picture {
   float: left;
 }
@@ -39,12 +46,6 @@ body {
 
 #intakeForm #intakeSummary {
   margin-left: 75px;
-}
-
-#intakeForm #DOB {
-  margin-top: 6px;
-  padding: .2em .6em .3em 0em;
-  display: inline-block;
 }
 
 #intakeForm #DOB {

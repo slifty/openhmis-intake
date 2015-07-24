@@ -35,7 +35,10 @@ html(lang="en")
       div#intake
         h1 Client Intake
         form#intakeForm
-          div
+          div#top
+            div.pct100#topLabels
+              div.label.pct50 First name
+              div.label.pct50 Last name
             div#picture
             div#intakeSummary
               input.pct50#firstName(name='firstName', type='text', placeholder='first name')
@@ -55,18 +58,27 @@ html(lang="en")
               select#gender(name='gender')
                 option(value='male') male
                 option(value='female') female
+                option(value='transgender male to female') transgender male to female
+                option(value='transgender female to male') transgender female to male
+                option(value='other') other
+                option(value='client doesn\'t know') client doesn't know
+                option(value='client refused') client refused
             .selectBox.pct33
               select#ethnicity(name='ethnicity')
-                option(value='hispanic') Hispanic
-                option(value='non-hispanic') non-Hispanic
+                option(value='Hispanic/Latino') Hispanic/Latino
+                option(value='Non-Hispanic/Non-Latino') Non-Hispanic/Non-Latino
+                option(value='client doesn\'t know') client doesn't know
+                option(value='client refused') client refused
             .selectBox.pct33
               select#race(name='race')
                 option(value='Asian') Asian
-                option(value='Black/African American') Black/African American
-                option(value='American Indian/Alaskan') American Indian/Alaskan
+                option(value='Black or African American') Black or African American
+                option(value='American Indian/Alaskan') American Indian or Alaska Native
                 option(value='White') White
-                option(value='Pacific Islander') Pacific Islander
+                option(value='Native Hawaiian or other Pacific Islander') Native Hawaiian or other Pacific Islander
                 option(value='other') other
+                option(value='client doesn\'t know') client doesn't know
+                option(value='client refused') client refused
           input#entityIndex(name='entityIndex', type='hidden')
           div.buttonBox
             button#backToResults(type='button') Back to Results
