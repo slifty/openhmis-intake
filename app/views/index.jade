@@ -48,19 +48,19 @@ html(lang="en")
           div.label.pct100 SSN
           input.pct100#SSN(name='SSN', type='text', placeholder='SSN')
           div#selectBoxes
+            .label.pct33 gender
+            .label.pct33 ethnicity
+            .label.pct33 race
             .selectBox.pct33
               select#gender(name='gender')
-                option(value='' disabled selected) gender
                 option(value='male') male
                 option(value='female') female
             .selectBox.pct33
               select#ethnicity(name='ethnicity')
-                option(value='' disabled selected) ethnicity
                 option(value='hispanic') Hispanic
                 option(value='non-hispanic') non-Hispanic
             .selectBox.pct33
               select#race(name='race')
-                option(value='' disabled selected) race
                 option(value='Asian') Asian
                 option(value='Black/African American') Black/African American
                 option(value='American Indian/Alaskan') American Indian/Alaskan

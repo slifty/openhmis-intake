@@ -82,17 +82,11 @@ body {
 #intakeForm .selectBox {
   height: 25px;
   border: none;
-  margin-top: 3px;
-  padding-top: 5px;
   text-align: center;
 }
 
 #intakeForm .selectBox select {
   width: 100%;
-}
-
-#intakeForm .selectBox select option:first-child {
-  display: none;
 }
 
 .buttonBox {
