@@ -230,13 +230,11 @@ $(function() {
     var picture = $("<div class='picture'><img src=\"img/" + hit.picture + "\"></div>");
     var text = $("<div class='text'></div>");
     var fullName = $("<div class='summaryElement'><span>" + hit.firstName + " " + hit.lastName + "</span></div>");
-    var gender = $("<div class='summaryElement'><span>(" + hit.gender + ")</span></div>");
     var clear = $("<div class='clear'></div>");
     var dob = $("<div class='summaryElement'><span class='label'>DOB: </span><span>" + hit.DOB + "</span></div>");
     var age = $("<div class='summaryElement'><span class='label'>age: </span><span>" + hit.age + "</span></div>");
     summaryDiv.append(picture);
     text.append(fullName);
-    text.append(gender);
     text.append(clear);
     text.append(dob);
     text.append(age);
