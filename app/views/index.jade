@@ -3,44 +3,88 @@ html(lang="en")
   head
     meta(name='viewport', content='width=device-width, initial-scale=1')
 
-    title Client Intake
+    title HMIS
 
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans', type='text/css')
     link(rel='stylesheet', type='text/css', href='css/lib/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='css/lib/pikaday.css')
     link(rel='stylesheet', type='text/css', href='css/main.css')
 
     script(type='text/javascript', src='js/lib/jquery.min.js')
     script(type='text/javascript', src='js/lib/bootstrap.min.js')
+    script(type='text/javascript', src='js/lib/moment.js')
+    script(type='text/javascript', src='js/lib/pikaday.js')
+    script(type='text/javascript', src='js/lib/sampleData.js')
     script(type='text/javascript', src='js/index.js')
 
   body
-    div#content.container
-      div.row
-        div.col-xs-12
-          h1 Client Intake
-      div.row
-        div.col-md-3
-        div.col-md-6
-          form#intakeForm
-            div.form-group
-              label(for='firstName') First Name
-              input#firstName.form-control(name='firstName', type='text', value='first', placeholder='John')
-            div.form-group
-              label(for='lastName') Last Name
-              input#lastName.form-control(name='lastName', type='text', value='last', placeholder='Doe')
-            div.form-group
-              label(for='ssn') SSN
-              input#ssn.form-control(name='ssn', type='text', value='111-11-1111', placeholder='XXX-XX-XXXX')
-            div.form-group
-              label(for='dob') Date of Birth
-              input#dob.form-control(name='dob', type='text', value='22/22/2222', placeholder='MM/DD/YYYY')
-            div.form-group
-              label(for='race') Race
-              input#race.form-control(name='race', type='text', value='race', placeholder='')
-            div.form-group
-              label(for='ethnicity') Ethnicity
-              input#ethnicity.form-control(name='ethnicity', type='text', value='ethnicity', placeholder='')
-            div.form-group
-              button.btn.btn-default(type='submit') Add Client
-        div.col-md-3
-
+    .container
+      div#logo
+        img(src='img/OpenHMIS-logo.jpg')
+      div#search
+        h1 Client Search
+        form#searchForm
+          div.form-group
+            input#searchField.form-control(name='searchField', type='text', placeholder='search by first or last name')
+            input#firstName(name='firstName', type='hidden')
+            input#lastName(name='lastName', type='hidden')
+          div#results
+          div.buttonBox
+            button#addNewClient(type='button')
+      div#intake
+        h1 Client Intake
+        form#intakeForm
+          div#top
+            div#topLabels
+              div.label.pct50 First name
+              div.label.pct50 Last name
+            div#picture
+            div#intakeSummary
+              input.pct50#firstName(name='firstName', type='text', placeholder='first name')
+              input.pct50#lastName(name='lastName', type='text', placeholder='last name')
+              div.pct67
+                div.label DOB:
+                div#DOB
+              div.pct33#datepicker
+                img(src='img/Farm-Fresh_calendar_view_month.png')
+          div.label.pct100 SSN
+          input.pct100#SSN(name='SSN', type='text', placeholder='SSN')
+          div#selectBoxes
+            .label.pct33 gender
+            .label.pct33 ethnicity
+            .label.pct33 race
+            .selectBox.pct33
+              select#gender(name='gender')
+                option(value='' default disabled)
+                option(value='Male') Male
+                option(value='Female') Female
+                option(value='Transgender Male to Female') Transgender Male to Female
+                option(value='Transgender Female to Male') Transgender Female to Male
+                option(value='other') Other
+                option(value='Client doesn\'t know') Client doesn't know
+                option(value='Client Refused') Client Refused
+                option(value='Data not collected') Data not collected
+            .selectBox.pct33
+              select#ethnicity(name='ethnicity')
+                option(value='' default disabled)
+                option(value='Hispanic/Latino') Hispanic/Latino
+                option(value='Non-Hispanic/Non-Latino') Non-Hispanic/Non-Latino
+                option(value='Client doesn\'t know') Client doesn't know
+                option(value='Client Refused') Client Refused
+                option(value='Data not collected') Data not collected
+            .selectBox.pct33
+              select#race(name='race')
+                option(value='' default disabled)
+                option(value='Asian') Asian
+                option(value='Black or African American') Black or African American
+                option(value='American Indian or Alaska Native') American Indian or Alaska Native
+                option(value='White') White
+                option(value='Native Hawaiian or Other Pacific Islander') Native Hawaiian or Other Pacific Islander
+                option(value='Other') Other
+                option(value='Client doesn\'t know') Client doesn't know
+                option(value='Client Refused') Client Refused
+                option(value='Data not collected') Data not collected
+          input#entityIndex(name='entityIndex', type='hidden')
+          div.buttonBox
+            button#backToResults(type='button') Back to Results
+            button#saveChanges(type='button') Save Changes

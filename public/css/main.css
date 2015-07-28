@@ -1,33 +1,206 @@
-* {
-  margin: 0px;
-  padding: 0px;
-}
-
 body {
   font-family: 'Open Sans', sans-serif;
   background: #eee;
+  background-image: url("../img/Midtown_HDR_Atlanta_smaller.jpg");
+  background-position: center;
 }
 
-#content {
-  width: 80%;
-  max-width: 600px;
-  margin: 10px auto;
+#logo {
+  position: absolute;
+  left: 15px;
+  top: 22px;
 }
 
-#content h1 {
+#logo img {
+  width: 80px;
+  height: 23px;
+}
+
+.clear {
+  clear: both;
+}
+
+#search, #intake {
+  display: none;
+}
+
+#intakeForm {
+  height: 450px;
+}
+
+#intakeForm #top #topLabels {
+  margin-left: 75px;
+  margin-top: -15px;
+}
+
+#intakeForm #picture {
+  float: left;
+}
+
+#intakeForm #picture img {
+  width: 75px;
+  height: 76px;
+}
+
+#intakeForm #intakeSummary {
+  margin-left: 75px;
+}
+
+#intakeForm #DOB {
+  margin-top: 6px;
+  padding: .2em .6em .3em 0em;
+  display: inline-block;
+}
+
+#intakeForm #datepicker {
+  padding-right: .6em;
+  text-align: right;
+}
+
+#intakeForm img {
+  width: 24px;
+  height: 24px;
+}
+
+#intakeForm .label {
+  color: black;
+  text-align: left;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+#intakeForm input[type=text] {
+  height: 38px;
+  padding-left: 5px;
+}
+
+#intakeForm #selectBoxes {
+  margin: 10px 0px;
+}
+
+#intakeForm .selectBox {
+  height: 25px;
+  border: none;
   text-align: center;
 }
 
-form#intakeForm {
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
+#intakeForm .selectBox select {
+  width: 100%;
 }
-form#intakeForm input {
+
+.buttonBox {
+  float: right;
+}
+
+.buttonBox button {
+  float: left;
+}
+
+/*
+#searchForm #warningMessage {
+  float: left;
+  margin-top: 17px;
+  margin-right: 5px;
+  color: red;
+  font-style: italic;
+  display: none;
+}
+*/
+#searchForm #addNewClient {
+  width: 300px;
+  margin-top: 15px;
+}
+
+#searchForm button:disabled {
+  color: #ccc;
+}
+
+#intakeForm button {
+  margin-left: 5px;
+  margin-top: 80px;
+}
+
+.pct33 {
+  width: 33%;
+  display: inline-block;
+}
+.pct34 {
+  width: 34%;
+  display: inline-block;
+}
+.pct50 {
+  width: 50%;
+  display: inline-block;
+}
+.pct67 {
+  width: 67%;
+  display: inline-block;
+}
+.pct100 {
+  width: 100%;
+  display: inline-block;
+}
+
+.container {
+  position: relative;
+  background: #fff;
+  padding: 15px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  height: 600px;
+  width: 450px;
+  margin: 10px auto;
+}
+
+.container h1 {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#searchForm input {
+  height: 50px;
+}
+
+#results {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 390px;
+  overflow-y: scroll;
+}
+
+.hit {
+  border: 1px solid  #ccc;
+  border-collapse: collapse;
+  border-radius: 4px;
+  background-color: #058;
+  height: 77px;
+  color: white;
+  clear: both;
+  cursor: pointer;
+}
+
+.hit .picture, .hit .text {
+  height: 75px;
+  float: left;
+}
+
+.hit .text {
   padding: 5px;
 }
 
-
-label {
-  cursor: pointer;
+.hit .summaryElement {
+  float: left;
+  padding: 0px 10px;
 }
+
+.hit .summaryElement .label {
+  padding-left: 0px;
+}
+
+
+.hit span.marked {
+  /* won't be red in production, but makes marked output more obvious for now */
+  color: red;
+}
+

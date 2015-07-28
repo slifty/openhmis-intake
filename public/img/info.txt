@@ -1,0 +1,1 @@
+faces taken from http://www.londonstreetphoto.org/wp-content/uploads/2012/06/Danny-Santos-portraits1.png, then tiled and trimmed with ImageMagick
