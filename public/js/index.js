@@ -1,3 +1,20 @@
+
+$(function() {
+
+  /* This Code is a single example of an API call and it should be burned immediately! */
+
+ $.ajax("/clients", {
+  method: "GET",
+  dataType: "json"
+ }).done(function(data) {
+  console.log(data);
+ });
+
+});
+
+
+
+
 $(function() {
   $(document).ready(function() {
     // minimum search length needed to start looking for matches.
@@ -157,14 +174,14 @@ $(function() {
 
     // Then split the user's string on non-alphanumeric sequences. This
     // eliminates a dot after a middle initial, a comma if name is
-    // entered as "Doe, John" (or as "Doe , John"), etc. 
+    // entered as "Doe, John" (or as "Doe , John"), etc.
     userSubstrings = userString.split(/[^\w]+/);
 
     // Store the first and second user substrings into some hidden form
     // fields. They might be used later if a new client is created.
     $("#searchForm #firstName").val(userSubstrings[0]);
     $("#searchForm #lastName").val(userSubstrings.length > 1 ? userSubstrings[1] : "");
-    
+
     // The hit factory will generate new a Hit object or return an
     // already instantiated one with the requested index.
     var hitFactory = new HitFactory();
@@ -322,7 +339,7 @@ $(function() {
 
   function refreshIntakeFormDOB(DOB) {
     if (DOB) {
-      $("#intakeForm #DOB").html(getFormattedDOB(DOB) + "&nbsp;&nbsp(age "+ getYearsOld(DOB) + ")");    
+      $("#intakeForm #DOB").html(getFormattedDOB(DOB) + "&nbsp;&nbsp(age "+ getYearsOld(DOB) + ")");
     }
     else {
       $("#intakeForm #DOB").html("&nbsp;");
@@ -340,6 +357,6 @@ $(function() {
     var entity = sampleData[entityIndex];
     for (var i=0; i<propertyListLength; i++) {
       entity[propertyList[i]] = $("#intakeForm #" + propertyList[i]).val();
-    }       
+    }
   }
 });
